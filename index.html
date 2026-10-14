@@ -47,6 +47,7 @@ input,select,textarea{width:100%;padding:11px 12px;border:1.5px solid var(--line
 .in{padding:9px 11px 12px}.in h3{font:600 14px/1.3 'Instrument Sans',system-ui,sans-serif;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:36px}
 .price{font:800 18px 'Bricolage Grotesque',system-ui,sans-serif;color:var(--pri);margin-top:4px}
 .sub{color:var(--mute);font-size:12.5px}
+.warn{background:var(--wait);color:var(--waitink);border-radius:10px;padding:10px 12px;font-size:13.5px;margin:10px 0}.pv .old{opacity:.95}
 .tag{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:8px;background:var(--soft);margin:4px 4px 0 0}.tag.low{background:var(--wait);color:var(--waitink)}
 nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surf);border-top:1px solid var(--line);display:flex;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
 nav button{flex:1;border:0;background:none;padding:6px 2px;border-radius:10px;color:var(--mute);font-size:12px}
@@ -97,7 +98,9 @@ const SUPABASE_URL='https://kocfhlzubxemotwiaopb.supabase.co';
 const SUPABASE_KEY='sb_publishable_eZvBp3224ZEsWQqdA-xujg_36DVDH6Z';
 /* ========================================================================== */
 
-const CATS=[['Téléphones','📱'],['Vêtements','👕'],['Informatique','💻'],['Accessoires','🎒'],['Maison','🏠']];
+const CATS=[['Téléphones','📱'],['Vêtements','👕'],['Informatique','💻'],['Accessoires','🎒'],['Maison','🏠'],['Autre','🛍️']];
+const ILL=100000000,illim=p=>p.quantite>=50000000,stk=p=>illim(p)?'Stock illimité':p.quantite+' en stock';
+const ACTIVE=['Paiement confirmé','Acceptée par le vendeur','En préparation','En livraison'];
 const EMO=Object.fromEntries(CATS);
 const STEPS=['Paiement en attente','Paiement confirmé','Acceptée par le vendeur','En préparation','En livraison','Livrée'];
 const TR={'Paiement en attente':['Paiement confirmé','Refusée'],'Paiement confirmé':['Acceptée par le vendeur','Refusée'],'Acceptée par le vendeur':['En préparation'],'En préparation':['En livraison']};
@@ -120,7 +123,7 @@ if(SUPABASE_URL.includes('COLLE_ICI')||SUPABASE_KEY.includes('COLLE_ICI')){
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const rpc=async(f,a)=>{const {data,error}=await sb.rpc(f,a);if(error)throw new Error(error.message);return data};
 
-let user=null,produits=[],commandes=[],recues=[],claims={},codes={},me=null,msgs=[],names={},chat=null,adm=null,pollT=null,cfg={};
+let editId=null,keepPh=[],user=null,produits=[],commandes=[],recues=[],claims={},codes={},me=null,msgs=[],names={},chat=null,adm=null,pollT=null,cfg={};
 const isAdm=()=>me&&me.role==='admin';
 let cart=ld('em_panier',[]),view='home',q='',cat='',sort='new',pmin='',pmax='',tab='annonces',photos=[];
 const P=id=>produits.find(p=>p.id==id),C=id=>commandes.find(c=>c.id==id);
@@ -157,16 +160,21 @@ function upd(){
  const l=vis().filter(p=>norm(p.nom+' '+p.categorie).includes(t)&&(!cat||p.categorie===cat)&&(isNaN(a)||p.prix>=a)&&(isNaN(b)||p.prix<=b));
  if(sort==='asc')l.sort((x,y)=>x.prix-y.prix);if(sort==='desc')l.sort((x,y)=>y.prix-x.prix);
  $('#cnt').textContent=l.length?l.length+' produit(s)':'';
- $('#grid').innerHTML=l.length?l.map(p=>`<button class="card" data-a="open" data-id="${p.id}"><div class="pic">${pic(p)}</div><div class="in"><h3>${esc(p.nom)}</h3><div class="price">${fcfa(p.prix)}</div><div class="sub">📍 ${esc(p.zone||'—')}</div><span class="tag">${esc(p.etat)}</span>${p.quantite<=3?`<span class="tag low">Plus que ${p.quantite}</span>`:''}</div></button>`).join(''):'<div class="empty" style="grid-column:1/-1">Aucun produit trouvé.<br>Soyez le premier à publier une annonce !</div>'}
-function sell(){$('#app').innerHTML=`<h2>Vendre un produit</h2><div class="f">
-<label>Nom du produit</label><input id="fn" maxlength="60">
+ $('#grid').innerHTML=l.length?l.map(p=>`<button class="card" data-a="open" data-id="${p.id}"><div class="pic">${pic(p)}</div><div class="in"><h3>${esc(p.nom)}</h3><div class="price">${fcfa(p.prix)}</div><div class="sub">📍 ${esc(p.zone||'—')}</div><span class="tag">${esc(p.etat)}</span>${p.quantite<=3?`<span class="tag low">Plus que ${p.quantite}</span>`:''}${p.ventes>0?`<div class="sub">${p.ventes} vendu${p.ventes>1?'s':''}</div>`:''}</div></button>`).join(''):'<div class="empty" style="grid-column:1/-1">Aucun produit trouvé.<br>Soyez le premier à publier une annonce !</div>'}
+function sell(){const e=editId?P(editId):null;if(editId&&!e){editId=null;keepPh=[]}
+ const v=e||{nom:'',prix:'',quantite:1,categorie:CATS[0][0],etat:'Neuf',zone:'',description:''},il=e&&illim(e);
+ $('#app').innerHTML=`<h2>${e?'Modifier mon annonce':'Vendre un produit'}</h2><div class="f">
+<label>Nom du produit</label><input id="fn" maxlength="60" value="${esc(v.nom)}">
 <label>Photos (facultatif, jusqu'à ${MAXP})</label><input id="fp" type="file" accept="image/*" multiple><div class="pv" id="pv"></div>
-<div class="two"><div><label>Prix (FCFA)</label><input id="fx" type="number" inputmode="numeric" min="1"></div><div><label>Quantité</label><input id="fq" type="number" inputmode="numeric" min="1" value="1"></div></div>
-<div class="two"><div><label>Catégorie</label><select id="fc">${CATS.map(([c])=>`<option>${c}</option>`).join('')}</select></div><div><label>État</label><select id="fe"><option>Neuf</option><option>Occasion</option></select></div></div>
-<label>Localisation ou zone de livraison</label><input id="fz" maxlength="80" placeholder="Ex : Dakar, Pikine">
-<label>Description</label><textarea id="fd" rows="3" maxlength="500"></textarea><div id="fm"></div><br>
-<button class="btn" id="pubb" data-a="pub">Publier mon annonce</button></div>`;pv()}
-function pv(){$('#pv').innerHTML=photos.map((x,i)=>`<div><img src="${x.u}" alt="Photo ${i+1}"><button data-a="rmph" data-i="${i}" aria-label="Retirer la photo ${i+1}">✕</button></div>`).join('')}
+<div class="two"><div><label>Prix (FCFA)</label><input id="fx" type="number" inputmode="numeric" min="1" value="${esc(v.prix)}"></div><div><label>Quantité</label><input id="fq" type="number" inputmode="numeric" min="1" value="${il?1:esc(v.quantite)}" ${il?'disabled':''}></div></div>
+<label style="display:flex;gap:8px;align-items:center;margin-top:8px"><input id="fi" type="checkbox" ${il?'checked':''} style="width:auto"> Quantité illimitée (jamais en rupture)</label>
+<div class="two"><div><label>Catégorie</label><select id="fc">${CATS.map(([c])=>`<option ${c===v.categorie?'selected':''}>${c}</option>`).join('')}</select></div><div><label>État</label><select id="fe"><option ${v.etat==='Neuf'?'selected':''}>Neuf</option><option ${v.etat==='Occasion'?'selected':''}>Occasion</option></select></div></div>
+<label>Localisation ou zone de livraison</label><input id="fz" maxlength="80" placeholder="Ex : Dakar, Pikine" value="${esc(v.zone||'')}">
+<label>Description</label><textarea id="fd" rows="3" maxlength="500">${esc(v.description)}</textarea>
+<div class="warn">🚚 <b>Vous êtes responsable de la livraison.</b> Après paiement, vous avez 7 jours pour livrer. Si le produit n'est pas livré dans ce délai, sans justification valide de votre part, l'acheteur est remboursé automatiquement.</div>
+<div id="fm"></div>
+<button class="btn" id="pubb" data-a="pub">${e?'Enregistrer les modifications':'Publier mon annonce'}</button>${e?'<div class="acts"><button class="btn alt" data-a="canedit">Annuler</button></div>':''}</div>`;pv()}
+function pv(){$('#pv').innerHTML=keepPh.map((u,i)=>`<div class="old"><img src="${esc(u)}" alt="Photo actuelle ${i+1}"><button data-a="rmold" data-i="${i}" aria-label="Retirer la photo actuelle ${i+1}">✕</button></div>`).join('')+photos.map((x,i)=>`<div><img src="${x.u}" alt="Photo ${i+1}"><button data-a="rmph" data-i="${i}" aria-label="Retirer la photo ${i+1}">✕</button></div>`).join('')}
 function badge(s){return `<span class="st ${s==='Livrée'||STEPS.indexOf(s)>0?'ok':/Annul|Refus|Récl/.test(s)?'bad':''}">${esc(s)}</span>`}
 function steps(s){const i=STEPS.indexOf(s);return i<0?'':`<div class="steps">${STEPS.map((_,k)=>`<span class="${k<=i?'d':''}"></span>`).join('')}</div>`}
 function orders(){
@@ -174,18 +182,22 @@ function orders(){
  <p class="sub">${c.quantite} × ${fcfa(c.prix_unitaire)} · ${esc(c.mode)}${c.adresse?' · '+esc(c.adresse):''}</p><p class="sub">Passée le ${esc(dt(c.created_at))}</p>${badge(c.statut)}${steps(c.statut)}
  ${c.statut==='En livraison'&&codes[c.id]?`<div class="cbox"><div>Votre code de livraison</div><div class="code">${esc(codes[c.id])}</div><div class="sub">Donnez-le uniquement au moment de la réception.</div></div>`:''}
  ${c.statut==='Livrée'?`<p class="note">Livraison confirmée le ${esc(dt(c.livree_le))}.</p>`:''}
+ ${ACTIVE.includes(c.statut)&&c.delai_fin?`<div class="warn">🛡️ Le vendeur doit livrer avant le <b>${esc(dt(c.delai_fin))}</b>. Passé ce délai, sans justification valide du vendeur, votre argent vous est reversé.</div>`:''}
+ ${c.justif_retard&&ACTIVE.includes(c.statut)?`<p class="note">Le vendeur a justifié un retard : « ${esc(c.justif_retard)} ». Le délai a été prolongé. Si vous n'êtes pas d'accord, utilisez « Signaler un problème ».</p>`:''}
+ ${c.statut==='Remboursée'?`<p class="note">Commande remboursée : votre argent vous est reversé.</p>`:''}
  ${claims[c.id]?`<p class="note">Votre signalement : « ${esc(claims[c.id].motif)} ». ${claims[c.id].resolu?'Décision : '+(claims[c.id].decision==='rembourser'?'remboursement accordé.':'réclamation rejetée.'):'Il sera examiné.'}</p>`:''}
  <div class="acts">${c.statut==='Paiement en attente'?`<button class="btn bad sm" data-a="cancel" data-id="${c.id}">Annuler la commande</button>`:''}${!claims[c.id]&&CLAIM.includes(c.statut)?`<button class="btn alt sm" data-a="claim" data-id="${c.id}">Signaler un problème</button>`:''}</div></div>`).join(''):'<div class="empty">Aucune commande pour le moment.<br>Choisissez un produit pour commencer.</div>')}
 function shop(){
  const mine=produits.filter(p=>p.seller_id===user.id),rec=recues;
  let h=`<h2>Ma boutique</h2><div class="tabs"><button data-a="tab" data-t="annonces" class="${tab==='annonces'?'on':''}">Mes annonces (${mine.length})</button><button data-a="tab" data-t="recues" class="${tab==='recues'?'on':''}">Commandes reçues (${rec.length})</button></div>`;
- if(tab==='annonces')h+=mine.length?mine.map(p=>`<div class="box"><h3>${esc(p.nom)}</h3><div class="price">${fcfa(p.prix)}</div><p class="sub">Quantité : ${p.quantite} · ${esc(p.categorie)}</p>${p.disponible===false?'<span class="st bad">Indisponible</span>':'<span class="st ok">Disponible</span>'}
- <div class="acts"><button class="btn alt sm" data-a="open" data-id="${p.id}">Voir</button><button class="btn alt sm" data-a="tog" data-id="${p.id}">${p.disponible===false?'Remettre en vente':'Marquer indisponible'}</button><button class="btn bad sm" data-a="del" data-id="${p.id}">Supprimer</button></div></div>`).join(''):'<div class="empty">Vous n\'avez pas encore d\'annonce.<br>Publiez votre premier produit.</div>';
+ if(tab==='annonces')h+=mine.length?mine.map(p=>`<div class="box"><h3>${esc(p.nom)}</h3><div class="price">${fcfa(p.prix)}</div><p class="sub">Quantité : ${illim(p)?'illimitée':p.quantite} · ${esc(p.categorie)}${p.ventes>0?' · '+p.ventes+' vendu'+(p.ventes>1?'s':''):''}</p>${p.disponible===false?'<span class="st bad">Indisponible</span>':'<span class="st ok">Disponible</span>'}
+ <div class="acts"><button class="btn alt sm" data-a="open" data-id="${p.id}">Voir</button><button class="btn sm" data-a="edit" data-id="${p.id}">Modifier</button><button class="btn alt sm" data-a="tog" data-id="${p.id}">${p.disponible===false?'Remettre en vente':'Marquer indisponible'}</button><button class="btn bad sm" data-a="del" data-id="${p.id}">Supprimer</button></div></div>`).join(''):'<div class="empty">Vous n\'avez pas encore d\'annonce.<br>Publiez votre premier produit.</div>';
  else if(!rec.length)h+='<div class="empty">Aucune commande reçue pour le moment.</div>';
  else{const v=rec.filter(c=>c.statut==='Livrée'),t=v.reduce((s,c)=>s+c.total,0),f=v.reduce((s,c)=>s+com(c),0);
   h+=`<div class="box" style="background:var(--soft)"><p>Ventes livrées : <b>${fcfa(t)}</b></p><p>Commissions E-Market (1 %) : ${fcfa(f)}</p><p>Montant pour vous : <b>${fcfa(t-f)}</b></p></div>`+rec.map(c=>`<div class="box"><div class="row" style="border:0"><h3>${esc(c.produit)}</h3><b>${fcfa(c.total)}</b></div>
   <p class="sub">${c.quantite} × ${fcfa(c.prix_unitaire)} · Client : ${esc(c.client)} (${esc(c.telephone)})</p><p class="sub">${esc(c.mode)}${c.adresse?' · '+esc(c.adresse):''}</p>${badge(c.statut)}${steps(c.statut)}
   <p class="note">Commission 1 % : ${fcfa(com(c))} · Vous recevrez : ${fcfa(c.total-com(c))}</p>
+  ${ACTIVE.includes(c.statut)&&c.delai_fin?`<div class="warn">🚚 Vous êtes responsable de la livraison. À livrer avant le <b>${esc(dt(c.delai_fin))}</b>, sinon l'acheteur est remboursé automatiquement.</div>${c.justif_retard?`<p class="note">Votre justification : « ${esc(c.justif_retard)} »</p>`:`<div class="acts"><button class="btn alt sm" data-a="jus" data-id="${c.id}">Justifier un retard</button></div>`}`:''}
   ${claims[c.id]?`<div class="msg err">Problème signalé : « ${esc(claims[c.id].motif)} ». Commande suspendue le temps de l'examen.</div>`:''}
   <div class="acts">${(TR[c.statut]||[]).filter(s=>s!=='Paiement confirmé'||cfg.mode_test!=='false').map(s=>`<button class="btn ${s==='Refusée'?'bad':s==='Paiement confirmé'?'alt':''} sm" data-a="st" data-id="${c.id}" data-s="${s}">${LBL[s]}</button>`).join('')}</div>
   ${c.statut==='Paiement en attente'&&cfg.mode_test==='false'?'<p class="note">En attente de la confirmation du paiement par le prestataire de paiement.</p>':''}
@@ -196,7 +208,7 @@ const cnt=()=>{$('#cn').textContent=cart.reduce((s,x)=>s+x.q,0)};
 const saveCart=()=>{try{localStorage.setItem('em_panier',JSON.stringify(cart))}catch(e){}cnt()};
 function cartItems(){const l=cart.map(i=>({p:P(i.id),q:i.q})).filter(x=>x.p&&x.p.disponible!==false&&x.p.quantite>0);l.forEach(x=>x.q=Math.min(x.q,x.p.quantite));return l}
 function cartView(){const l=cartItems(),t=l.reduce((s,x)=>s+x.p.prix*x.q,0);
- $('#app').innerHTML='<h2>Mon panier</h2><br>'+(l.length?l.map(x=>`<div class="box ci"><div class="pic">${pic(x.p)}</div><div style="flex:1;min-width:0"><h3>${esc(x.p.nom)}</h3><div class="price">${fcfa(x.p.prix)}</div><div class="qty"><button data-a="cq" data-id="${x.p.id}" data-d="-1" aria-label="Moins">−</button><b>${x.q}</b><button data-a="cq" data-id="${x.p.id}" data-d="1" aria-label="Plus">+</button><button class="btn bad sm" data-a="crm" data-id="${x.p.id}" style="margin-left:auto">Retirer</button></div></div></div>`).join('')+`<div class="box"><div class="row" style="border:0"><b>Total</b><b>${fcfa(t)}</b></div><p class="note">Chaque produit devient une commande séparée, avec son propre code de livraison. Frais de livraison non inclus.</p><br><button class="btn acc" data-a="cgo">Commander</button></div>`:'<div class="empty">Votre panier est vide.<br>Ajoutez des produits depuis l\'accueil.</div>')}
+ $('#app').innerHTML='<h2>Mon panier</h2><br>'+(l.length?l.map(x=>`<div class="box ci"><div class="pic">${pic(x.p)}</div><div style="flex:1;min-width:0"><h3>${esc(x.p.nom)}</h3><div class="price">${fcfa(x.p.prix)}</div><div class="qty"><button data-a="cq" data-id="${x.p.id}" data-d="-1" aria-label="Moins">−</button><b>${x.q}</b><button data-a="cq" data-id="${x.p.id}" data-d="1" aria-label="Plus">+</button><button class="btn bad sm" data-a="crm" data-id="${x.p.id}" style="margin-left:auto">Retirer</button></div></div></div>`).join('')+`<div class="box"><div class="row" style="border:0"><b>Total</b><b>${fcfa(t)}</b></div><p class="note">Chaque produit devient une commande séparée, avec son propre code de livraison. Frais de livraison non inclus.</p><div class="warn">🛡️ Le vendeur est responsable de la livraison. Sans livraison dans le délai, et sans justification valide, votre argent vous est reversé.</div><button class="btn acc" data-a="cgo">Commander</button></div>`:'<div class="empty">Votre panier est vide.<br>Ajoutez des produits depuis l\'accueil.</div>')}
 function cartForm(){const l=cartItems(),t=l.reduce((s,x)=>s+x.p.prix*x.q,0);
  sheet(`<div class="f"><h2>Finaliser la commande</h2><p>${l.length} produit(s) · ${fcfa(t)}</p><label>Votre nom</label><input id="bn" maxlength="60"><label>Téléphone</label><input id="bt" type="tel" maxlength="20"><label>Mode de réception</label><select id="bm"><option>Livraison</option><option>Remise en main propre</option></select><div id="bad"><label>Adresse de livraison</label><input id="ba" maxlength="120"></div><label>Moyen de paiement</label><select><option>Mobile Money (simulation)</option></select><div id="bmsg"></div><br><button class="btn" data-a="cok">Confirmer la commande</button><div class="acts"><button class="btn alt" data-a="close">Retour</button></div></div>`);
  $('#bm').onchange=()=>$('#bad').style.display=$('#bm').value==='Livraison'?'block':'none'}
@@ -249,7 +261,9 @@ function openP(id){const p=P(id),ok=p.quantite>0&&p.disponible!==false;
  sheet(`<div class="big" id="big">${pic(p)}</div>${p.photos&&p.photos.length>1?`<div class="th">${p.photos.map((u,i)=>`<img src="${esc(u)}" class="${i?'':'on'}" data-a="g" data-id="${p.id}" data-i="${i}" alt="Photo ${i+1}">`).join('')}</div>`:''}
  <h2>${esc(p.nom)}</h2><div class="price" style="font-size:22px">${fcfa(p.prix)}</div><p>${esc(p.description)}</p>
  <div class="row"><span class="sub">Catégorie</span><span>${esc(p.categorie)}</span></div><div class="row"><span class="sub">État</span><span>${esc(p.etat)}</span></div>
- <div class="row"><span class="sub">Disponibilité</span><span>${ok?p.quantite+' en stock':'Indisponible'}</span></div><div class="row"><span class="sub">Vendeur</span><span>${esc(p.vendeur)}</span></div><div class="row"><span class="sub">Zone</span><span>${esc(p.zone||'—')}</span></div>
+ <div class="row"><span class="sub">Disponibilité</span><span>${ok?stk(p):'Indisponible'}</span></div><div class="row"><span class="sub">Vendeur</span><span>${esc(p.vendeur)}</span></div><div class="row"><span class="sub">Zone</span><span>${esc(p.zone||'—')}</span></div>
+ ${p.ventes>0?`<div class="row"><span class="sub">Vendus</span><span>${p.ventes}</span></div>`:''}
+ <div class="warn">🛡️ <b>Achat protégé :</b> si le vendeur ne livre pas dans le délai prévu, sans justification valide, votre argent vous est reversé.</div>
  <div class="acts"><button class="btn acc" data-a="buy" data-id="${p.id}" ${ok?'':'disabled'}>Acheter</button><button class="btn" data-a="add" data-id="${p.id}" ${ok?'':'disabled'}>Ajouter au panier</button><button class="btn alt" data-a="contact" data-id="${p.id}">Contacter le vendeur</button><button class="btn alt" data-a="close">Fermer</button></div>`)}
 function buyForm(id){const p=P(id);
  sheet(`<div class="f"><h2>Passer commande</h2><p>${esc(p.nom)} · ${fcfa(p.prix)}</p>
@@ -259,6 +273,7 @@ function buyForm(id){const p=P(id);
  <div id="bad"><label>Adresse de livraison</label><input id="ba" maxlength="120"></div>
  <label>Moyen de paiement</label><select><option>Mobile Money (simulation)</option></select>
  <div class="box" style="margin-top:14px"><div class="row" style="border:0"><b>Total</b><b id="bto">${fcfa(p.prix)}</b></div><p class="note">Frais de livraison éventuels non inclus, à préciser avec le vendeur.</p></div>
+ <div class="warn">🛡️ Le vendeur est responsable de la livraison. En cas de non-livraison ou de délai dépassé sans justification valide, votre argent vous est reversé.</div>
  <div id="bmsg"></div><button class="btn" data-a="ok" data-id="${p.id}">Confirmer la commande</button><div class="acts"><button class="btn alt" data-a="open" data-id="${p.id}">Retour</button></div></div>`);
  $('#bq').oninput=()=>$('#bto').textContent=fcfa(p.prix*Math.max(0,parseInt($('#bq').value)||0));
  $('#bm').onchange=()=>$('#bad').style.display=$('#bm').value==='Livraison'?'block':'none'}
@@ -267,7 +282,7 @@ function buyForm(id){const p=P(id);
 const im=f=>new Promise((ok,ko)=>{const u=URL.createObjectURL(f),i=new Image();i.onload=()=>{URL.revokeObjectURL(u);ok(i)};i.onerror=()=>ko();i.src=u});
 async function shrink(f){const i=await im(f),r=Math.min(1,900/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(i.width*r));c.height=Math.max(1,Math.round(i.height*r));c.getContext('2d').drawImage(i,0,0,c.width,c.height);
  return new Promise((ok,ko)=>c.toBlob(b=>b?ok(b):ko(),'image/jpeg',.75))}
-async function addPhotos(inp){let n=0;for(const f of [...inp.files].slice(0,MAXP-photos.length)){try{const b=await shrink(f);photos.push({b,u:URL.createObjectURL(b)});pv()}catch(e){n++}}
+async function addPhotos(inp){let n=0;for(const f of [...inp.files].slice(0,Math.max(0,MAXP-photos.length-keepPh.length))){try{const b=await shrink(f);photos.push({b,u:URL.createObjectURL(b)});pv()}catch(e){n++}}
  if(n)toast(n+' photo(s) non chargée(s).');inp.value=''}
 
 /* ---------- Actions ---------- */
@@ -277,7 +292,7 @@ document.addEventListener('click',async e=>{const t=e.target.closest('[data-a]')
  try{
  if(a==='bg'){if(e.target===t)sheet('');return}
  if(a==='close')sheet('');
- else if(a==='nav'){sheet('');const v=t.dataset.v;if(['sell','orders','shop','inbox'].includes(v)&&!user){authForm('in');return}view=v;render()}
+ else if(a==='nav'){sheet('');const v=t.dataset.v;if(['sell','orders','shop','inbox'].includes(v)&&!user){authForm('in');return}if(v==='sell'&&view!=='sell'){editId=null;keepPh=[];photos=[]}view=v;render()}
  else if(a==='theme'){const r=document.documentElement,cur=r.dataset.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');r.dataset.theme=cur==='dark'?'light':'dark'}
  else if(a==='acct'){if(!user)authForm('in');else sheet(`<h2>Mon compte</h2><p class="sub">${esc(user.email)}</p><div class="acts">${isAdm()?'<button class="btn" data-a="adm">🛡️ Espace administrateur</button>':''}<button class="btn bad" data-a="logout">Se déconnecter</button><button class="btn alt" data-a="close">Fermer</button></div>`)}
  else if(a==='am')authForm(t.dataset.m);
@@ -332,24 +347,32 @@ document.addEventListener('click',async e=>{const t=e.target.closest('[data-a]')
   t.disabled=true;
   try{for(const x of l)await rpc('passer_commande',{p_product:x.p.id,p_qte:x.q,p_client:nm,p_tel:tel,p_mode:mode,p_adresse:mode==='Livraison'?ad:''})}catch(x){t.disabled=false;await reload();return er('#bmsg',x.message)}
   cart=[];saveCart();sheet('');view='orders';await reload();toast('Commandes enregistrées : paiement en attente.')}
+ else if(a==='edit'){editId=+id;keepPh=[...(P(id).photos||[])];photos=[];sheet('');view='sell';render()}
+ else if(a==='canedit'){editId=null;keepPh=[];photos=[];view='shop';render()}
+ else if(a==='rmold'){keepPh.splice(+t.dataset.i,1);pv()}
+ else if(a==='jus'){const m=(prompt('Expliquez pourquoi la livraison est retardée (10 caractères minimum). Le délai sera prolongé de 3 jours, une seule fois :')||'').trim();
+  if(!m)return;if(m.length<10)return toast('Expliquez le retard en quelques mots (10 caractères minimum).');
+  await rpc('justifier_retard',{p_order:+id,p_motif:m.slice(0,300)});await reload();toast('Justification envoyée, délai prolongé.')}
  else if(a==='rmph'){URL.revokeObjectURL(photos[+t.dataset.i].u);photos.splice(+t.dataset.i,1);pv()}
- else if(a==='pub'){if(me&&me.suspendu)return toast('Votre compte est suspendu.');const g=i=>$(i).value.trim(),pr=parseInt(g('#fx')),qt=parseInt(g('#fq')),c=g('#fc');
+ else if(a==='pub'){if(me&&me.suspendu)return toast('Votre compte est suspendu.');const g=i=>$(i).value.trim(),pr=parseInt(g('#fx')),il=$('#fi').checked,qt=il?ILL:parseInt(g('#fq')),c=g('#fc');
   if(!g('#fn')||!(pr>0)||!(qt>0)||!g('#fd')){er('#fm','Renseignez le nom, un prix, une quantité et une description.');return}
-  t.disabled=true;t.textContent='Publication…';
-  try{const urls=[];
+  const lab=editId?'Enregistrer les modifications':'Publier mon annonce';
+  t.disabled=true;t.textContent='Enregistrement…';
+  try{const urls=[...keepPh];
    for(let i=0;i<photos.length;i++){const path=`${user.id}/${Date.now()}_${i}.jpg`;
     const {error}=await sb.storage.from('photos').upload(path,photos[i].b,{contentType:'image/jpeg'});if(error)throw error;
     urls.push(sb.storage.from('photos').getPublicUrl(path).data.publicUrl)}
-   const {error}=await sb.from('products').insert({seller_id:user.id,nom:g('#fn'),prix:pr,categorie:c,etat:g('#fe'),quantite:qt,zone:g('#fz'),description:g('#fd'),photos:urls});
-   if(error)throw error;
-  }catch(x){t.disabled=false;t.textContent='Publier mon annonce';return er('#fm',x.message)}
-  photos=[];q='';cat='';$('#q').value='';view='home';await reload();toast('Votre annonce est publiée !')}
+   const row={nom:g('#fn'),prix:pr,categorie:c,etat:g('#fe'),quantite:qt,zone:g('#fz'),description:g('#fd'),photos:urls};
+   if(editId){const {error}=await sb.from('products').update(row).eq('id',editId).eq('seller_id',user.id);if(error)throw error}
+   else{const {error}=await sb.from('products').insert({seller_id:user.id,...row});if(error)throw error}
+  }catch(x){t.disabled=false;t.textContent=lab;return er('#fm',x.message)}
+  const was=editId;photos=[];keepPh=[];editId=null;q='';cat='';$('#q').value='';view=was?'shop':'home';await reload();toast(was?'Annonce modifiée !':'Votre annonce est publiée !')}
  }catch(x){toast(x.message||'Une erreur est survenue.')}
 });
 document.addEventListener('input',e=>{const i=e.target.id;
  if(i==='q'){q=e.target.value;if(view!=='home'){view='home';render()}else upd()}
  else if(i==='pmin'||i==='pmax'||i==='sort'){pmin=$('#pmin').value;pmax=$('#pmax').value;sort=$('#sort').value;upd()}});
-document.addEventListener('change',e=>{if(e.target.id==='fp')addPhotos(e.target)});
+document.addEventListener('change',e=>{if(e.target.id==='fp')addPhotos(e.target);if(e.target.id==='fi'){$('#fq').disabled=e.target.checked}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='ct'){const b=document.querySelector('[data-a="send"]');if(b)b.click()}});
 
 /* ---------- Démarrage ---------- */
@@ -357,6 +380,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='ct'){
  const {data}=await sb.auth.getSession();user=data.session?data.session.user:null;
  sb.auth.onAuthStateChange((_e,s)=>{user=s?s.user:null;setTimeout(reload,0)});
  try{await sb.rpc('expirer_commandes')}catch(e){}
+ try{await sb.rpc('expirer_livraisons')}catch(e){}
  await reload();
 })();
 </script>

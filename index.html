@@ -299,9 +299,9 @@ document.addEventListener('click',async e=>{const t=e.target.closest('[data-a]')
  else if(a==='login'){const {error}=await sb.auth.signInWithPassword({email:$('#ae').value.trim(),password:$('#ap').value});if(error)return er('#amsg',error.message==='Invalid login credentials'?'E-mail ou mot de passe incorrect.':error.message);sheet('');toast('Connecté !')}
  else if(a==='signup'){const em=$('#ae').value.trim(),pw=$('#ap').value,nm=$('#an').value.trim();
   if(!em)return er('#amsg','Entrez votre e-mail.');if(pw.length<8)return er('#amsg','Mot de passe : 8 caractères minimum.');if(!nm)return er('#amsg','Entrez votre nom.');
-  const {data,error}=await sb.auth.signUp({email:em,password:pw,options:{data:{nom:nm,boutique:$('#ab').value.trim()}}});
+  const {data,error}=await sb.auth.signUp({email:em,password:pw,options:{emailRedirectTo:location.origin+location.pathname,data:{nom:nm,boutique:$('#ab').value.trim()}}});
   if(error)return er('#amsg',error.message);
-  if(!data.session){$('#amsg').innerHTML='<div class="msg">Compte créé. Vérifiez votre e-mail pour confirmer, puis connectez-vous.</div>';return}
+  if(!data.session){$('#amsg').innerHTML='<div class="msg">Compte créé. Vérifiez votre e-mail et cliquez sur le lien : il vous ramènera sur le site, déjà connecté.</div>';return}
   sheet('');toast('Compte créé, bienvenue !')}
  else if(a==='logout'){await sb.auth.signOut();sheet('');view='home';toast('Déconnecté')}
  else if(a==='srch'){q=$('#q').value;if(view!=='home'){view='home';render()}else upd()}

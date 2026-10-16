@@ -7,11 +7,11 @@
 <title>E-Market | Acheter et vendre</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#F1F4EE;--surf:#fff;--ink:#14231C;--mute:#5B6B62;--line:#D8DFD4;--pri:#0E6B4F;--onpri:#fff;--hdr:#0E6B4F;--acc:#F2A900;--soft:#E3EEE8;--err:#B3261E;--errbg:#f6dcd9;--wait:#FFF1C7;--waitink:#6b4e00}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1713;--surf:#17231D;--ink:#EAF1EC;--mute:#9DB0A5;--line:#2B3B33;--pri:#3DB88C;--onpri:#08140F;--hdr:#12382B;--soft:#1E3128;--err:#F2B8B5;--errbg:#3a1f1d;--wait:#3b3010;--waitink:#f2d88a}}
-:root[data-theme="dark"]{--bg:#0F1713;--surf:#17231D;--ink:#EAF1EC;--mute:#9DB0A5;--line:#2B3B33;--pri:#3DB88C;--onpri:#08140F;--hdr:#12382B;--soft:#1E3128;--err:#F2B8B5;--errbg:#3a1f1d;--wait:#3b3010;--waitink:#f2d88a}
+:root{--bg:#F1F4EE;--surf:#fff;--ink:#14231C;--mute:#5B6B62;--line:#D8DFD4;--pri:#0E6B4F;--pri2:#12875F;--glow:rgba(14,107,79,.45);--onpri:#fff;--hdr:#0E6B4F;--acc:#F2A900;--soft:#E3EEE8;--err:#B3261E;--errbg:#f6dcd9;--wait:#FFF1C7;--waitink:#6b4e00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1713;--surf:#17231D;--ink:#EAF1EC;--mute:#9DB0A5;--line:#2B3B33;--pri:#3DB88C;--pri2:#5FD0A6;--glow:rgba(61,184,140,.35);--onpri:#08140F;--hdr:#12382B;--soft:#1E3128;--err:#F2B8B5;--errbg:#3a1f1d;--wait:#3b3010;--waitink:#f2d88a}}
+:root[data-theme="dark"]{--bg:#0F1713;--surf:#17231D;--ink:#EAF1EC;--mute:#9DB0A5;--line:#2B3B33;--pri:#3DB88C;--pri2:#5FD0A6;--glow:rgba(61,184,140,.35);--onpri:#08140F;--hdr:#12382B;--soft:#1E3128;--err:#F2B8B5;--errbg:#3a1f1d;--wait:#3b3010;--waitink:#f2d88a}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.45 'Instrument Sans',system-ui,sans-serif;padding-bottom:84px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.45 'Instrument Sans',system-ui,sans-serif;padding-bottom:104px}
 h1,h2,h3{font-family:'Bricolage Grotesque','Instrument Sans',system-ui,sans-serif;margin:0}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -22,47 +22,58 @@ header{position:sticky;top:0;z-index:5;background:var(--hdr);color:#fff;padding:
 .le{display:inline-grid;place-items:center;width:34px;height:34px;background:var(--acc);color:#0E6B4F;border-radius:10px;font:italic 700 24px Georgia,serif;transform:rotate(-6deg);margin-right:3px;vertical-align:middle}
 #cn{background:var(--acc);color:#14231C;border-radius:10px;padding:0 6px;font-size:12px}
 .box.ci{display:flex;gap:10px}.ci .pic{width:72px;height:72px;aspect-ratio:auto;border-radius:10px;flex:none;font-size:30px}
-.qty{display:flex;align-items:center;gap:8px;margin-top:6px}.qty>button:not(.btn){width:32px;height:32px;border-radius:8px;border:1.5px solid var(--line);background:var(--surf);font-size:18px;padding:0}
-.ib{background:rgba(255,255,255,.15);color:#fff;border:0;border-radius:10px;padding:7px 11px}
-.sb{display:flex;border-radius:12px;overflow:hidden;background:#fff}
-.sb input{flex:1;min-width:0;border:0;padding:12px 14px;background:#fff;color:#14231C}
-.sb button{border:0;background:var(--acc);color:#14231C;padding:0 18px;font-size:18px}
+.qty{display:flex;align-items:center;gap:8px;margin-top:6px}.qty>button:not(.btn){width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line);background:var(--surf);font-size:18px;padding:0}
+.ib{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:7px 12px;backdrop-filter:blur(6px);transition:background .15s,transform .1s}.ib:hover{background:rgba(255,255,255,.26)}.ib:active{transform:scale(.94)}
+.sb{display:flex;border-radius:999px;overflow:hidden;background:#fff;box-shadow:0 4px 14px -4px rgba(0,0,0,.35);padding:3px}
+.sb input{flex:1;min-width:0;border:0;padding:10px 16px;background:#fff;color:#14231C;border-radius:999px}.sb input:focus{outline:none}
+.sb button{border:0;background:linear-gradient(135deg,#FFC93C,var(--acc));color:#14231C;padding:0 18px;font-size:17px;border-radius:999px;transition:transform .1s}.sb button:active{transform:scale(.93)}
 main{max-width:760px;margin:0 auto;padding:12px 14px}
-.hero{background:var(--hdr);color:#fff;border-radius:16px;padding:18px;margin-bottom:14px}
+.hero{background:linear-gradient(135deg,var(--hdr),#14946A);color:#fff;border-radius:22px;padding:20px;margin-bottom:14px;box-shadow:0 10px 24px -10px var(--glow)}
 .hero h2{font-size:23px;line-height:1.15;margin-bottom:6px}.hero p{margin:0 0 12px;opacity:.9}
-.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.pills span{font-size:12px;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 10px}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.pills span{font-size:12px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:4px 11px}
 .cats{display:flex;gap:12px;overflow-x:auto;padding:2px 0 12px}
 .ct{flex:none;width:68px;text-align:center;background:none;border:0;padding:0;color:var(--ink);font-size:12px}
-.ct b{display:grid;place-items:center;width:56px;height:56px;margin:0 auto 4px;border-radius:50%;background:var(--surf);border:2px solid var(--line);font-size:26px;font-weight:400}
-.ct.on b{border-color:var(--pri);background:var(--soft)}.ct.on{font-weight:600}
+.ct b{display:grid;place-items:center;width:56px;height:56px;margin:0 auto 4px;border-radius:50%;background:var(--surf);border:2px solid var(--line);font-size:26px;font-weight:400;box-shadow:0 3px 8px -4px rgba(0,0,0,.25);transition:transform .12s,border-color .12s}.ct:active b{transform:scale(.92)}
+.ct.on b{border-color:var(--pri);background:var(--soft);box-shadow:0 0 0 4px var(--soft)}.ct.on{font-weight:600}
 .fl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 .fl select{grid-column:1/-1}
-input,select,textarea{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--surf)}
+input,select,textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--surf);transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 4px var(--soft)}
 .cnt{color:var(--mute);margin:0 0 8px;font-size:13px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 @media(min-width:560px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.card{background:var(--surf);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-align:left;padding:0;display:block;width:100%}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:18px;overflow:hidden;text-align:left;padding:0;display:block;width:100%;box-shadow:0 4px 14px -8px rgba(0,0,0,.3);transition:transform .15s,box-shadow .15s}.card:hover{transform:translateY(-2px);box-shadow:0 10px 20px -10px rgba(0,0,0,.35)}.card:active{transform:scale(.98)}
 .pic{aspect-ratio:1/.8;display:grid;place-items:center;font-size:54px;background:var(--soft);overflow:hidden}
 .pic img{width:100%;height:100%;object-fit:cover}
 .in{padding:9px 11px 12px}.in h3{font:600 14px/1.3 'Instrument Sans',system-ui,sans-serif;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:36px}
 .price{font:800 18px 'Bricolage Grotesque',system-ui,sans-serif;color:var(--pri);margin-top:4px}
 .sub{color:var(--mute);font-size:12.5px}
-.warn{background:var(--wait);color:var(--waitink);border-radius:10px;padding:10px 12px;font-size:13.5px;margin:10px 0}.pv .old{opacity:.95}
-.tag{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:8px;background:var(--soft);margin:4px 4px 0 0}.tag.low{background:var(--wait);color:var(--waitink)}
-nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surf);border-top:1px solid var(--line);display:flex;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
-nav button{flex:1;border:0;background:none;padding:6px 2px;border-radius:10px;color:var(--mute);font-size:12px}
-nav button b{display:block;font-size:19px;font-weight:400}nav button.on{color:var(--pri);font-weight:600;background:var(--soft)}
-.btn{background:var(--pri);color:var(--onpri);border:0;border-radius:12px;padding:12px 16px;font-weight:600;width:100%}
-.btn.acc{background:var(--acc);color:#14231C}.btn.alt{background:var(--soft);color:var(--ink)}.btn.bad{background:var(--err);color:#fff}
-.btn.sm{width:auto;padding:8px 13px;font-size:14px}.btn[disabled]{opacity:.5}
+.warn{background:var(--wait);color:var(--waitink);border-radius:14px;padding:10px 12px;font-size:13.5px;margin:10px 0}.pv .old{opacity:.95}
+.tag.spo{background:linear-gradient(135deg,#FFC93C,var(--acc));color:#14231C;font-weight:700}
+.sec{margin:16px 0 8px}.sec h3{margin:0}
+.ad{display:flex;gap:12px;align-items:center;background:var(--surf);border:1px solid var(--line);border-radius:18px;padding:10px;text-decoration:none;color:var(--ink);margin:12px 0;box-shadow:0 4px 14px -10px rgba(0,0,0,.3)}
+.ad img{width:96px;height:72px;object-fit:cover;border-radius:12px;flex:none}.ad small{display:block;color:var(--mute);font-size:11px}.ad b{display:block}.ad span{font-size:13px;color:var(--mute)}
+.ad.ban{flex-direction:column;align-items:stretch}.ad.ban img{width:100%;height:auto;max-height:150px}
+.btn.wa{background:linear-gradient(135deg,#2BD96B,#1FAF54);color:#06210f;--glow:rgba(31,175,84,.45)}
+.tag{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:999px;background:var(--soft);margin:4px 4px 0 0}.tag.low{background:var(--wait);color:var(--waitink)}
+nav{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto;z-index:6;background:var(--surf);border:1px solid var(--line);border-radius:26px;display:flex;padding:6px;box-shadow:0 10px 30px -8px rgba(0,0,0,.4)}
+nav button{flex:1;border:0;background:none;padding:7px 2px;border-radius:20px;color:var(--mute);font-size:12px;transition:background .15s,color .15s}
+nav button b{display:block;font-size:19px;font-weight:400}nav button.on{color:var(--pri);font-weight:600;background:var(--soft)}nav button:active{transform:scale(.94)}
+.btn{background:linear-gradient(135deg,var(--pri),var(--pri2));color:var(--onpri);border:0;border-radius:999px;padding:13px 20px;font-weight:600;letter-spacing:.1px;width:100%;box-shadow:0 4px 12px -3px var(--glow),inset 0 1px 0 rgba(255,255,255,.18);transition:transform .12s ease,box-shadow .12s ease,filter .12s ease}
+.btn:hover{filter:brightness(1.06);box-shadow:0 6px 16px -3px var(--glow),inset 0 1px 0 rgba(255,255,255,.18)}.btn:active{transform:scale(.97);box-shadow:0 2px 6px -2px var(--glow)}
+.btn.acc{background:linear-gradient(135deg,#FFC93C,var(--acc));color:#14231C;--glow:rgba(242,169,0,.5)}
+.btn.alt{background:var(--soft);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}.btn.alt:hover{box-shadow:inset 0 0 0 1.5px var(--pri)}
+.btn.bad{background:linear-gradient(135deg,#D8453B,var(--err));color:#fff;--glow:rgba(179,38,30,.45)}
+.btn.sm{width:auto;padding:9px 16px;font-size:14px}.btn[disabled]{opacity:.45;box-shadow:none;transform:none;filter:grayscale(.3)}
+@media(prefers-reduced-motion:reduce){.btn,.card,nav button{transition:none}}
 .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .f label{display:block;margin:12px 0 4px;font-weight:600}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .sheet{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10;display:flex;align-items:flex-end;justify-content:center}
-.sheet>div{background:var(--bg);width:100%;max-width:580px;max-height:93%;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.sheet>div{background:var(--bg);width:100%;max-width:580px;max-height:93%;overflow:auto;border-radius:28px 28px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom,0px))}
 .big{height:220px;font-size:80px;border-radius:14px;display:grid;place-items:center;background:var(--soft);margin-bottom:8px;overflow:hidden}.big img{width:100%;height:100%;object-fit:contain}
 .th{display:flex;gap:8px;overflow-x:auto;margin-bottom:10px}.th img{width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid transparent;flex:none}.th img.on{border-color:var(--pri)}
 .row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--line)}
-.box{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.box{background:var(--surf);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:0 4px 14px -10px rgba(0,0,0,.3)}
 .box h3{font-size:16px}.box p{margin:4px 0}
 .st{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12.5px;font-weight:600;background:var(--wait);color:var(--waitink)}.st.ok{background:var(--soft);color:var(--pri)}.st.bad{background:var(--errbg);color:var(--err)}
 .steps{display:flex;gap:3px;margin:10px 0}.steps span{flex:1;height:6px;border-radius:3px;background:var(--line)}.steps span.d{background:var(--pri)}
@@ -70,16 +81,16 @@ nav button b{display:block;font-size:19px;font-weight:400}nav button.on{color:va
 .cbox{background:var(--wait);border:2px dashed var(--acc);border-radius:12px;padding:10px;margin-top:10px;text-align:center;color:var(--ink)}
 .msg{padding:10px 12px;border-radius:10px;background:var(--soft);margin:8px 0}.msg.err{background:var(--errbg);color:var(--err)}
 .empty{text-align:center;color:var(--mute);padding:36px 10px}.note{font-size:13px;color:var(--mute);margin:8px 0 0}
-.tabs{display:flex;gap:8px;margin:10px 0}.tabs button{flex:1;border:0;border-radius:10px;padding:10px;background:var(--soft);font-weight:600}.tabs button.on{background:var(--pri);color:var(--onpri)}
+.tabs{display:flex;gap:4px;margin:10px 0;background:var(--soft);padding:4px;border-radius:999px}.tabs button{flex:1;border:0;border-radius:999px;padding:10px;background:none;font-weight:600;transition:background .15s}.tabs button.on{background:var(--pri);color:var(--onpri);box-shadow:0 3px 8px -3px var(--glow)}
 .pv{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}.pv div{position:relative;width:76px;height:76px}.pv img{width:100%;height:100%;object-fit:cover;border-radius:10px}
 .pv button{position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;border:0;background:var(--err);color:#fff;padding:0}
 .chat{display:flex;flex-direction:column;gap:6px;margin:10px 0;max-height:55vh;overflow-y:auto;padding:4px}
-.bub{max-width:80%;padding:8px 12px;border-radius:14px;background:var(--surf);border:1px solid var(--line);align-self:flex-start;word-break:break-word}
+.bub{max-width:80%;padding:9px 14px;border-radius:20px;background:var(--surf);border:1px solid var(--line);align-self:flex-start;word-break:break-word}
 .bub.me{align-self:flex-end;background:var(--pri);color:var(--onpri);border-color:var(--pri)}
 .bub small{display:block;opacity:.65;font-size:11px;margin-top:2px}
 .cin{display:flex;gap:8px}.cin input{flex:1}.cin .btn{width:auto}
 .stat{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat div{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:10px;color:var(--mute);font-size:13px}.stat b{display:block;font:800 19px 'Bricolage Grotesque',system-ui,sans-serif;color:var(--pri)}
-#toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:20;display:none;max-width:90%}
+#toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;z-index:20;display:none;max-width:90%;box-shadow:0 8px 20px -6px rgba(0,0,0,.45)}
 </style>
 </head>
 <body>
@@ -107,6 +118,9 @@ const TR={'Paiement en attente':['Paiement confirmé','Refusée'],'Paiement conf
 const LBL={'Paiement confirmé':'TEST : simuler le paiement','Acceptée par le vendeur':'Accepter','En préparation':'Passer en préparation','En livraison':'Passer en livraison','Refusée':'Refuser'};
 const CLAIM=['Paiement confirmé','Acceptée par le vendeur','En préparation','En livraison','Livrée'];
 const MAXT=5,MAXP=4;
+const SP=[['24h','24 heures',500],['3j','3 jours',1000],['7j','7 jours',2000],['1m','1 mois',15000]];
+const POS={accueil_banniere:"Bannière page d'accueil",entre_produits:'Entre les produits',categorie:'Dans une catégorie',resultats:'Page de résultats'};
+const SEED=1+Math.floor(Math.random()*1000);
 
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -123,23 +137,34 @@ if(SUPABASE_URL.includes('COLLE_ICI')||SUPABASE_KEY.includes('COLLE_ICI')){
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const rpc=async(f,a)=>{const {data,error}=await sb.rpc(f,a);if(error)throw new Error(error.message);return data};
 
-let editId=null,keepPh=[],user=null,produits=[],commandes=[],recues=[],claims={},codes={},me=null,msgs=[],names={},chat=null,adm=null,pollT=null,cfg={};
+let spons=[],pubs=[],contact=null,editId=null,keepPh=[],user=null,produits=[],commandes=[],recues=[],claims={},codes={},me=null,msgs=[],names={},chat=null,adm=null,pollT=null,cfg={};
 const isAdm=()=>me&&me.role==='admin';
 let cart=ld('em_panier',[]),view='home',q='',cat='',sort='new',pmin='',pmax='',tab='annonces',photos=[];
 const P=id=>produits.find(p=>p.id==id),C=id=>commandes.find(c=>c.id==id);
 const pic=(p,i=0)=>p.photos&&p.photos[i]?`<img src="${esc(p.photos[i])}" alt="${esc(p.nom)}">`:p.image;
 const vis=()=>produits.filter(p=>p.disponible!==false&&p.quantite>0);
 const com=c=>Math.round(c.total*.01);
+const now=()=>new Date();
+const spOf=p=>spons.find(x=>x.product_id==p.id&&x.statut==='Active'&&new Date(x.fin)>now());
+const isSp=p=>!!spOf(p);
+const pubOk=a=>a.actif&&new Date(a.debut)<=now()&&new Date(a.fin)>=now();
+const pubFor=pos=>{const l=pubs.filter(a=>a.emplacement===pos&&pubOk(a));return l.length?l[SEED%l.length]:null};
+const adHtml=(a,cl)=>{const i=`${a.image_url?`<img src="${esc(a.image_url)}" alt="">`:''}<div><small>Publicité · ${esc(a.entreprise)}</small><b>${esc(a.titre)}</b>${a.description?`<span>${esc(a.description)}</span>`:''}</div>`;
+ return a.lien&&/^https:\/\//.test(a.lien)?`<a class="ad ${cl||''}" href="${esc(a.lien)}" target="_blank" rel="noopener noreferrer nofollow sponsored">${i}</a>`:`<div class="ad ${cl||''}">${i}</div>`};
+const cardHtml=p=>`<button class="card" data-a="open" data-id="${p.id}"><div class="pic">${pic(p)}</div><div class="in"><h3>${esc(p.nom)}</h3><div class="price">${fcfa(p.prix)}</div><div class="sub">📍 ${esc(p.zone||'—')}</div>${isSp(p)?'<span class="tag spo">⭐ Sponsorisé</span>':''}<span class="tag">${esc(p.etat)}</span>${p.quantite<=3?`<span class="tag low">Plus que ${p.quantite}</span>`:''}${p.ventes>0?`<div class="sub">${p.ventes} vendu${p.ventes>1?'s':''}</div>`:''}</div></button>`;
+function go(u,blank){if(!blank){location.href=u;return}const a=document.createElement('a');a.href=u;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}
 
 /* ---------- Données ---------- */
 async function loadP(){
- const [{data,error},cf]=await Promise.all([sb.from('products').select('*, profiles(boutique,nom)').order('created_at',{ascending:false}),sb.from('app_config').select('*')]);
+ const [{data,error},cf,sr,pr]=await Promise.all([sb.from('products').select('*, profiles(boutique,nom)').order('created_at',{ascending:false}),sb.from('app_config').select('*'),sb.from('sponsorisations').select('*'),sb.from('publicites').select('*')]);
+ spons=sr.data||[];pubs=pr.data||[];
  cfg={};(cf.data||[]).forEach(r=>cfg[r.key]=r.value);
  if(error){toast('Erreur de chargement : '+error.message);return}
  produits=data.map(p=>({...p,photos:p.photos||[],vendeur:(p.profiles&&(p.profiles.boutique||p.profiles.nom))||'Vendeur',image:EMO[p.categorie]||'🛍️'}));
 }
 async function loadO(){
- commandes=[];recues=[];claims={};codes={};msgs=[];me=null;if(!user)return;await loadM();
+ commandes=[];recues=[];claims={};codes={};msgs=[];me=null;contact=null;if(!user)return;await loadM();
+ try{const r=await sb.from('contacts_vendeur').select('*').eq('user_id',user.id).maybeSingle();contact=r.data||null}catch(e){}
  const [o,cl,cd]=await Promise.all([sb.from('orders').select('*').order('created_at',{ascending:false}),sb.from('claims').select('*'),sb.from('delivery_codes').select('*')]);
  const l=o.data||[];
  commandes=l.filter(c=>c.buyer_id===user.id);recues=l.filter(c=>c.seller_id===user.id);
@@ -154,13 +179,17 @@ function home(){
  <div class="cats"><button class="ct ${!cat?'on':''}" data-a="cat" data-c=""><b>🛍️</b>Tout</button>${CATS.map(([c,e])=>`<button class="ct ${cat===c?'on':''}" data-a="cat" data-c="${c}"><b>${e}</b>${c}</button>`).join('')}</div>
  <div class="fl"><input id="pmin" type="number" inputmode="numeric" min="0" placeholder="Prix min (FCFA)" value="${esc(pmin)}" aria-label="Prix minimum"><input id="pmax" type="number" inputmode="numeric" min="0" placeholder="Prix max (FCFA)" value="${esc(pmax)}" aria-label="Prix maximum">
  <select id="sort" aria-label="Trier"><option value="new">Plus récents</option><option value="asc" ${sort==='asc'?'selected':''}>Prix croissant</option><option value="desc" ${sort==='desc'?'selected':''}>Prix décroissant</option></select></div>
- <p class="cnt" id="cnt"></p><div class="grid" id="grid"></div>`;upd()}
+ <div id="adslot"></div><div id="spsec"></div><p class="cnt" id="cnt"></p><div class="grid" id="grid"></div>`;upd()}
 function upd(){
  const t=norm(q),a=parseInt(pmin),b=parseInt(pmax);
  const l=vis().filter(p=>norm(p.nom+' '+p.categorie).includes(t)&&(!cat||p.categorie===cat)&&(isNaN(a)||p.prix>=a)&&(isNaN(b)||p.prix<=b));
  if(sort==='asc')l.sort((x,y)=>x.prix-y.prix);if(sort==='desc')l.sort((x,y)=>y.prix-x.prix);
  $('#cnt').textContent=l.length?l.length+' produit(s)':'';
- $('#grid').innerHTML=l.length?l.map(p=>`<button class="card" data-a="open" data-id="${p.id}"><div class="pic">${pic(p)}</div><div class="in"><h3>${esc(p.nom)}</h3><div class="price">${fcfa(p.prix)}</div><div class="sub">📍 ${esc(p.zone||'—')}</div><span class="tag">${esc(p.etat)}</span>${p.quantite<=3?`<span class="tag low">Plus que ${p.quantite}</span>`:''}${p.ventes>0?`<div class="sub">${p.ventes} vendu${p.ventes>1?'s':''}</div>`:''}</div></button>`).join(''):'<div class="empty" style="grid-column:1/-1">Aucun produit trouvé.<br>Soyez le premier à publier une annonce !</div>'}
+ const ad=pubFor(q?'resultats':cat?'categorie':'accueil_banniere');$('#adslot').innerHTML=ad?adHtml(ad,'ban'):'';
+ const sp=l.filter(isSp).sort((x,y)=>((x.id*SEED)%1009)-((y.id*SEED)%1009)).slice(0,6);
+ $('#spsec').innerHTML=sp.length?`<div class="sec"><h3>⭐ Annonces sponsorisées</h3></div><div class="grid">${sp.map(cardHtml).join('')}</div><div class="sec"><h3>Tous les produits</h3></div>`:'';
+ const it=l.map(cardHtml),mid=pubFor('entre_produits');if(mid&&it.length>=4)it.splice(4,0,`<div style="grid-column:1/-1">${adHtml(mid)}</div>`);
+ $('#grid').innerHTML=l.length?it.join(''):'<div class="empty" style="grid-column:1/-1">Aucun produit trouvé.<br>Soyez le premier à publier une annonce !</div>'}
 function sell(){const e=editId?P(editId):null;if(editId&&!e){editId=null;keepPh=[]}
  const v=e||{nom:'',prix:'',quantite:1,categorie:CATS[0][0],etat:'Neuf',zone:'',description:''},il=e&&illim(e);
  $('#app').innerHTML=`<h2>${e?'Modifier mon annonce':'Vendre un produit'}</h2><div class="f">
@@ -171,6 +200,7 @@ function sell(){const e=editId?P(editId):null;if(editId&&!e){editId=null;keepPh=
 <div class="two"><div><label>Catégorie</label><select id="fc">${CATS.map(([c])=>`<option ${c===v.categorie?'selected':''}>${c}</option>`).join('')}</select></div><div><label>État</label><select id="fe"><option ${v.etat==='Neuf'?'selected':''}>Neuf</option><option ${v.etat==='Occasion'?'selected':''}>Occasion</option></select></div></div>
 <label>Localisation ou zone de livraison</label><input id="fz" maxlength="80" placeholder="Ex : Dakar, Pikine" value="${esc(v.zone||'')}">
 <label>Description</label><textarea id="fd" rows="3" maxlength="500">${esc(v.description)}</textarea>
+${!contact||(!contact.whatsapp&&!contact.telephone)?'<p class="note">📞 Pour être contacté par WhatsApp ou par téléphone, ajoutez vos numéros dans 👤 → Mes coordonnées.</p>':''}
 <div class="warn">🚚 <b>Vous êtes responsable de la livraison.</b> Après paiement, vous avez 7 jours pour livrer. Si le produit n'est pas livré dans ce délai, sans justification valide de votre part, l'acheteur est remboursé automatiquement.</div>
 <div id="fm"></div>
 <button class="btn" id="pubb" data-a="pub">${e?'Enregistrer les modifications':'Publier mon annonce'}</button>${e?'<div class="acts"><button class="btn alt" data-a="canedit">Annuler</button></div>':''}</div>`;pv()}
@@ -189,9 +219,10 @@ function orders(){
  <div class="acts">${c.statut==='Paiement en attente'?`<button class="btn bad sm" data-a="cancel" data-id="${c.id}">Annuler la commande</button>`:''}${!claims[c.id]&&CLAIM.includes(c.statut)?`<button class="btn alt sm" data-a="claim" data-id="${c.id}">Signaler un problème</button>`:''}</div></div>`).join(''):'<div class="empty">Aucune commande pour le moment.<br>Choisissez un produit pour commencer.</div>')}
 function shop(){
  const mine=produits.filter(p=>p.seller_id===user.id),rec=recues;
- let h=`<h2>Ma boutique</h2><div class="tabs"><button data-a="tab" data-t="annonces" class="${tab==='annonces'?'on':''}">Mes annonces (${mine.length})</button><button data-a="tab" data-t="recues" class="${tab==='recues'?'on':''}">Commandes reçues (${rec.length})</button></div>`;
- if(tab==='annonces')h+=mine.length?mine.map(p=>`<div class="box"><h3>${esc(p.nom)}</h3><div class="price">${fcfa(p.prix)}</div><p class="sub">Quantité : ${illim(p)?'illimitée':p.quantite} · ${esc(p.categorie)}${p.ventes>0?' · '+p.ventes+' vendu'+(p.ventes>1?'s':''):''}</p>${p.disponible===false?'<span class="st bad">Indisponible</span>':'<span class="st ok">Disponible</span>'}
- <div class="acts"><button class="btn alt sm" data-a="open" data-id="${p.id}">Voir</button><button class="btn sm" data-a="edit" data-id="${p.id}">Modifier</button><button class="btn alt sm" data-a="tog" data-id="${p.id}">${p.disponible===false?'Remettre en vente':'Marquer indisponible'}</button><button class="btn bad sm" data-a="del" data-id="${p.id}">Supprimer</button></div></div>`).join(''):'<div class="empty">Vous n\'avez pas encore d\'annonce.<br>Publiez votre premier produit.</div>';
+ let h=`<h2>Ma boutique</h2><div class="tabs"><button data-a="tab" data-t="annonces" class="${tab==='annonces'?'on':''}">Mes annonces (${mine.length})</button><button data-a="tab" data-t="recues" class="${tab==='recues'?'on':''}">Commandes reçues (${rec.length})</button><button data-a="tab" data-t="spons" class="${tab==='spons'?'on':''}">Sponsorisations</button></div>`;
+ if(tab==='annonces')h+=mine.length?mine.map(p=>`<div class="box"><h3>${esc(p.nom)}</h3><div class="price">${fcfa(p.prix)}</div><p class="sub">Quantité : ${illim(p)?'illimitée':p.quantite} · ${esc(p.categorie)}${p.ventes>0?' · '+p.ventes+' vendu'+(p.ventes>1?'s':''):''}</p>${p.disponible===false?'<span class="st bad">Indisponible</span>':'<span class="st ok">Disponible</span>'}${isSp(p)?` <span class="st ok">⭐ Sponsorisé jusqu'au ${esc(dt(spOf(p).fin))}</span>`:''}
+ <div class="acts"><button class="btn alt sm" data-a="open" data-id="${p.id}">Voir</button><button class="btn sm" data-a="edit" data-id="${p.id}">Modifier</button>${p.disponible!==false&&!isSp(p)&&!spons.some(x=>x.product_id==p.id&&x.statut==='En attente de paiement')?`<button class="btn acc sm" data-a="sp" data-id="${p.id}">⭐ Sponsoriser</button>`:''}<button class="btn alt sm" data-a="tog" data-id="${p.id}">${p.disponible===false?'Remettre en vente':'Marquer indisponible'}</button><button class="btn bad sm" data-a="del" data-id="${p.id}">Supprimer</button></div></div>`).join(''):'<div class="empty">Vous n\'avez pas encore d\'annonce.<br>Publiez votre premier produit.</div>';
+ else if(tab==='spons')h+=sponsHtml();
  else if(!rec.length)h+='<div class="empty">Aucune commande reçue pour le moment.</div>';
  else{const v=rec.filter(c=>c.statut==='Livrée'),t=v.reduce((s,c)=>s+c.total,0),f=v.reduce((s,c)=>s+com(c),0);
   h+=`<div class="box" style="background:var(--soft)"><p>Ventes livrées : <b>${fcfa(t)}</b></p><p>Commissions E-Market (1 %) : ${fcfa(f)}</p><p>Montant pour vous : <b>${fcfa(t-f)}</b></p></div>`+rec.map(c=>`<div class="box"><div class="row" style="border:0"><h3>${esc(c.produit)}</h3><b>${fcfa(c.total)}</b></div>
@@ -204,6 +235,13 @@ function shop(){
   ${c.statut==='Paiement en attente'&&cfg.mode_test!=='false'?'<p class="note">Le bouton TEST sert à essayer l\'application. En vrai, le paiement sera confirmé par le prestataire de paiement, jamais par le vendeur.</p>':''}
   ${c.statut==='En livraison'?((c.tentatives||0)>=MAXT?'<div class="msg err">Commande bloquée : trop de codes incorrects. Contactez le support.</div>':`<p class="note">À la remise, demandez à l'acheteur son code à 5 chiffres.</p><div class="acts"><input id="cc${c.id}" inputmode="numeric" maxlength="5" placeholder="00000" style="width:130px;text-align:center;letter-spacing:4px" aria-label="Code de livraison"><button class="btn sm" data-a="conf" data-id="${c.id}">Confirmer la livraison</button></div>`):''}</div>`).join('')}
  $('#app').innerHTML=h}
+function sponsHtml(){const l=spons.filter(x=>x.seller_id===user.id);
+ return l.length?l.map(x=>{const p=P(x.product_id),f=SP.find(y=>y[0]===x.formule),st=x.statut==='Active'&&new Date(x.fin)<=now()?'Expirée':x.statut;
+ return `<div class="box"><h3>${esc(p?p.nom:'Annonce')}</h3><p class="sub">Formule : ${esc(f?f[1]:x.formule)} · ${fcfa(x.montant)}</p><span class="st ${st==='Active'?'ok':st==='En attente de paiement'?'':'bad'}">${esc(st)}</span>
+ ${x.debut?`<p class="sub">Du ${esc(dt(x.debut))} au ${esc(dt(x.fin))}</p>`:''}
+ ${st==='En attente de paiement'?`<p class="note">Paiement en attente. Votre annonce sera sponsorisée après confirmation du paiement. Demande n° ${x.id}.</p><div class="acts"><button class="btn bad sm" data-a="spx" data-id="${x.id}">Annuler la demande</button></div>`:''}
+ ${st==='Active'?'<p class="note">Votre annonce est maintenant sponsorisée.</p>':''}${st==='Expirée'?'<p class="note">Votre sponsorisation a expiré.</p>':''}
+ ${['Expirée','Annulée','Paiement échoué'].includes(st)&&p&&p.disponible!==false&&!isSp(p)?`<div class="acts"><button class="btn acc sm" data-a="sp" data-id="${p.id}">⭐ Sponsoriser à nouveau</button></div>`:''}</div>`}).join(''):'<div class="empty">Aucune sponsorisation pour le moment.<br>Depuis « Mes annonces », touchez « Sponsoriser ».</div>'}
 const cnt=()=>{$('#cn').textContent=cart.reduce((s,x)=>s+x.q,0)};
 const saveCart=()=>{try{localStorage.setItem('em_panier',JSON.stringify(cart))}catch(e){}cnt()};
 function cartItems(){const l=cart.map(i=>({p:P(i.id),q:i.q})).filter(x=>x.p&&x.p.disponible!==false&&x.p.quantite>0);l.forEach(x=>x.q=Math.min(x.q,x.p.quantite));return l}
@@ -243,12 +281,27 @@ async function loadAdm(){
 }
 function adminView(){
  if(!adm){$('#app').innerHTML='<div class="empty">Chargement…</div>';loadAdm().then(()=>{if(view==='admin')adminView()}).catch(x=>toast(x.message));return}
- const s=adm.st,open=adm.cl.filter(c=>!c.resolu);
+ const s=adm.st,open=adm.cl.filter(c=>!c.resolu),pend=spons.filter(x=>x.statut==='En attente de paiement'),act=spons.filter(x=>x.statut==='Active'&&new Date(x.fin)>now()),pst=a=>!a.actif?'Désactivée':new Date(a.fin)<now()?'Terminée':new Date(a.debut)>now()?'Programmée':'Active';
  $('#app').innerHTML=`<h2>Espace administrateur</h2><br><div class="stat"><div><b>${s.utilisateurs||0}</b>Utilisateurs</div><div><b>${s.vendeurs||0}</b>Vendeurs</div><div><b>${s.produits||0}</b>Produits</div><div><b>${s.commandes||0}</b>Commandes</div><div><b>${fcfa(s.ventes||0)}</b>Ventes livrées</div><div><b>${fcfa(s.commissions||0)}</b>Commissions (1 %)</div></div>
+ <br><h3>Sponsorisations à confirmer (${pend.length})</h3><p class="note">Une annonce n'est sponsorisée qu'après confirmation du paiement. Actives en ce moment : ${act.length}.</p><br>${pend.length?pend.map(x=>{const p=P(x.product_id),f=SP.find(y=>y[0]===x.formule);return `<div class="box"><div class="row" style="border:0"><h3>${esc(p?p.nom:'Annonce')}</h3><b>${fcfa(x.montant)}</b></div><p class="sub">${esc(f?f[1]:x.formule)} · ${esc(p?p.vendeur:'')} · demande n° ${x.id} · ${esc(dt(x.created_at))}</p><div class="acts"><button class="btn sm" data-a="saa" data-id="${x.id}">Paiement reçu : activer</button></div></div>`}).join(''):'<div class="empty">Aucune demande en attente.</div>'}
+ <br><h3>Gestion des publicités (${pubs.length})</h3><div class="acts"><button class="btn acc sm" data-a="pbn">➕ Ajouter une publicité</button></div><br>${pubs.length?pubs.map(a=>`<div class="box"><div class="row" style="border:0"><h3>${esc(a.titre)}</h3><span class="st ${pst(a)==='Active'?'ok':pst(a)==='Programmée'?'':'bad'}">${pst(a)}</span></div><p class="sub">${esc(a.entreprise)} · ${esc(POS[a.emplacement]||a.emplacement)}</p><p class="sub">Du ${esc(new Date(a.debut).toLocaleDateString('fr-FR'))} au ${esc(new Date(a.fin).toLocaleDateString('fr-FR'))}</p><div class="acts"><button class="btn alt sm" data-a="pbe" data-id="${a.id}">Modifier</button><button class="btn alt sm" data-a="pbt" data-id="${a.id}">${a.actif?'Désactiver':'Réactiver'}</button><button class="btn bad sm" data-a="pbd" data-id="${a.id}">Supprimer</button></div></div>`).join(''):'<div class="empty">Aucune publicité.</div>'}
  <br><h3>Réclamations à traiter (${open.length})</h3><br>${open.length?open.map(c=>`<div class="box"><div class="row" style="border:0"><h3>${esc(c.orders?c.orders.produit:'Commande')}</h3><b>${fcfa(c.orders?c.orders.total:0)}</b></div><p class="sub">Client : ${esc(c.orders?c.orders.client:'')} (${esc(c.orders?c.orders.telephone:'')})</p><div class="msg err">« ${esc(c.motif)} »</div><p class="sub">${esc(dt(c.created_at))}</p><div class="acts"><button class="btn sm" data-a="adc" data-id="${c.id}" data-x="rembourser">Rembourser l'acheteur</button><button class="btn alt sm" data-a="adc" data-id="${c.id}" data-x="rejeter">Rejeter</button></div></div>`).join(''):'<div class="empty">Aucune réclamation en attente.</div>'}
  <h3>Annonces récentes</h3><br>${produits.slice(0,20).map(p=>`<div class="box"><h3>${esc(p.nom)}</h3><p class="sub">${fcfa(p.prix)} · ${esc(p.vendeur)} · ${p.disponible===false?'Désactivée':'Active'}</p><div class="acts"><button class="btn alt sm" data-a="apr" data-id="${p.id}" data-x="desactiver">Désactiver</button><button class="btn bad sm" data-a="apr" data-id="${p.id}" data-x="supprimer">Supprimer</button></div></div>`).join('')||'<div class="empty">Aucune annonce.</div>'}
  <h3>Comptes</h3><br>${adm.us.map(u=>`<div class="box"><div class="row" style="border:0"><span>${esc(u.nom||'—')}${u.boutique?' · '+esc(u.boutique):''}${u.role==='admin'?' (admin)':''}</span>${u.suspendu?'<span class="st bad">Suspendu</span>':''}</div>${u.id!==user.id&&u.role!=='admin'?`<div class="acts"><button class="btn ${u.suspendu?'alt':'bad'} sm" data-a="asp" data-id="${u.id}" data-x="${u.suspendu?'0':'1'}">${u.suspendu?'Réactiver':'Suspendre'}</button></div>`:''}</div>`).join('')}
  <h3>Journal des actions</h3><br>${adm.lg.length?adm.lg.map(l=>`<p class="sub">${esc(dt(l.created_at))} · ${esc(l.action)} · ${esc(l.cible||'')}</p>`).join(''):'<p class="sub">Aucune action pour le moment.</p>'}`}
+
+function adForm(id){const a=id?pubs.find(x=>x.id==id):null,d=x=>{if(!x)return '';const y=new Date(x);return new Date(y.getTime()-y.getTimezoneOffset()*60000).toISOString().slice(0,10)},
+ v=a||{entreprise:'',titre:'',description:'',lien:'',debut:null,fin:null,actif:true,emplacement:'accueil_banniere'};
+ sheet(`<div class="f"><h2>${a?'Modifier la publicité':'Ajouter une publicité'}</h2>
+ <label>Nom de l'entreprise</label><input id="pe" maxlength="80" value="${esc(v.entreprise)}">
+ <label>Titre</label><input id="pt" maxlength="100" value="${esc(v.titre)}">
+ <label>Description</label><textarea id="pd" rows="2" maxlength="300">${esc(v.description||'')}</textarea>
+ <label>Image ou bannière ${a&&a.image_url?'(laisser vide pour garder l\'actuelle)':''}</label><input id="pi" type="file" accept="image/*">
+ <label>Lien de destination (https://…, facultatif)</label><input id="pl" type="url" inputmode="url" maxlength="300" value="${esc(v.lien||'')}">
+ <div class="two"><div><label>Début</label><input id="pdb" type="date" value="${d(v.debut)||d(new Date())}"></div><div><label>Fin</label><input id="pdf" type="date" value="${d(v.fin)}"></div></div>
+ <label>Emplacement</label><select id="pp">${Object.entries(POS).map(([k,l])=>`<option value="${k}" ${v.emplacement===k?'selected':''}>${l}</option>`).join('')}</select>
+ <label style="display:flex;gap:8px;align-items:center;margin-top:8px"><input id="pa" type="checkbox" ${v.actif?'checked':''} style="width:auto"> Publicité active</label>
+ <div id="pm"></div><button class="btn" data-a="pbs" data-id="${a?a.id:''}">Enregistrer</button><div class="acts"><button class="btn alt" data-a="close">Annuler</button></div></div>`)}
 
 /* ---------- Fenêtres ---------- */
 function sheet(h){$('#sheet').innerHTML=h?`<div class="sheet" data-a="bg"><div>${h}</div></div>`:''}
@@ -259,12 +312,12 @@ function authForm(m){m=m||'in';
  <div id="amsg"></div><br><button class="btn" data-a="${m==='in'?'login':'signup'}">${m==='in'?'Se connecter':'Créer mon compte'}</button><div class="acts"><button class="btn alt" data-a="close">Fermer</button></div></div>`)}
 function openP(id){const p=P(id),ok=p.quantite>0&&p.disponible!==false;
  sheet(`<div class="big" id="big">${pic(p)}</div>${p.photos&&p.photos.length>1?`<div class="th">${p.photos.map((u,i)=>`<img src="${esc(u)}" class="${i?'':'on'}" data-a="g" data-id="${p.id}" data-i="${i}" alt="Photo ${i+1}">`).join('')}</div>`:''}
- <h2>${esc(p.nom)}</h2><div class="price" style="font-size:22px">${fcfa(p.prix)}</div><p>${esc(p.description)}</p>
+ <h2>${esc(p.nom)}</h2>${isSp(p)?'<span class="tag spo">⭐ Sponsorisé</span>':''}<div class="price" style="font-size:22px">${fcfa(p.prix)}</div><p>${esc(p.description)}</p>
  <div class="row"><span class="sub">Catégorie</span><span>${esc(p.categorie)}</span></div><div class="row"><span class="sub">État</span><span>${esc(p.etat)}</span></div>
  <div class="row"><span class="sub">Disponibilité</span><span>${ok?stk(p):'Indisponible'}</span></div><div class="row"><span class="sub">Vendeur</span><span>${esc(p.vendeur)}</span></div><div class="row"><span class="sub">Zone</span><span>${esc(p.zone||'—')}</span></div>
  ${p.ventes>0?`<div class="row"><span class="sub">Vendus</span><span>${p.ventes}</span></div>`:''}
  <div class="warn">🛡️ <b>Achat protégé :</b> si le vendeur ne livre pas dans le délai prévu, sans justification valide, votre argent vous est reversé.</div>
- <div class="acts"><button class="btn acc" data-a="buy" data-id="${p.id}" ${ok?'':'disabled'}>Acheter</button><button class="btn" data-a="add" data-id="${p.id}" ${ok?'':'disabled'}>Ajouter au panier</button><button class="btn alt" data-a="contact" data-id="${p.id}">Contacter le vendeur</button><button class="btn alt" data-a="close">Fermer</button></div>`)}
+ <div class="acts"><button class="btn acc" data-a="buy" data-id="${p.id}" ${ok?'':'disabled'}>Acheter</button><button class="btn" data-a="add" data-id="${p.id}" ${ok?'':'disabled'}>Ajouter au panier</button><button class="btn alt" data-a="contact" data-id="${p.id}">Contacter le vendeur</button><button class="btn wa" data-a="wa" data-id="${p.id}">💬 Contacter sur WhatsApp</button><button class="btn alt" data-a="tel" data-id="${p.id}">📞 Appeler le vendeur</button><button class="btn alt" data-a="close">Fermer</button></div>`)}
 function buyForm(id){const p=P(id);
  sheet(`<div class="f"><h2>Passer commande</h2><p>${esc(p.nom)} · ${fcfa(p.prix)}</p>
  <label>Quantité</label><input id="bq" type="number" inputmode="numeric" min="1" max="${p.quantite}" value="1">
@@ -294,14 +347,14 @@ document.addEventListener('click',async e=>{const t=e.target.closest('[data-a]')
  if(a==='close')sheet('');
  else if(a==='nav'){sheet('');const v=t.dataset.v;if(['sell','orders','shop','inbox'].includes(v)&&!user){authForm('in');return}if(v==='sell'&&view!=='sell'){editId=null;keepPh=[];photos=[]}view=v;render()}
  else if(a==='theme'){const r=document.documentElement,cur=r.dataset.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');r.dataset.theme=cur==='dark'?'light':'dark'}
- else if(a==='acct'){if(!user)authForm('in');else sheet(`<h2>Mon compte</h2><p class="sub">${esc(user.email)}</p><div class="acts">${isAdm()?'<button class="btn" data-a="adm">🛡️ Espace administrateur</button>':''}<button class="btn bad" data-a="logout">Se déconnecter</button><button class="btn alt" data-a="close">Fermer</button></div>`)}
+ else if(a==='acct'){if(!user)authForm('in');else sheet(`<h2>Mon compte</h2><p class="sub">${esc(user.email)}</p><div class="acts">${isAdm()?'<button class="btn" data-a="adm">🛡️ Espace administrateur</button>':''}<button class="btn alt" data-a="coord">📞 Mes coordonnées</button><button class="btn bad" data-a="logout">Se déconnecter</button><button class="btn alt" data-a="close">Fermer</button></div>`)}
  else if(a==='am')authForm(t.dataset.m);
  else if(a==='login'){const {error}=await sb.auth.signInWithPassword({email:$('#ae').value.trim(),password:$('#ap').value});if(error)return er('#amsg',error.message==='Invalid login credentials'?'E-mail ou mot de passe incorrect.':error.message);sheet('');toast('Connecté !')}
  else if(a==='signup'){const em=$('#ae').value.trim(),pw=$('#ap').value,nm=$('#an').value.trim();
   if(!em)return er('#amsg','Entrez votre e-mail.');if(pw.length<8)return er('#amsg','Mot de passe : 8 caractères minimum.');if(!nm)return er('#amsg','Entrez votre nom.');
-  const {data,error}=await sb.auth.signUp({email:em,password:pw,options:{emailRedirectTo:location.origin+location.pathname,data:{nom:nm,boutique:$('#ab').value.trim()}}});
+  const {data,error}=await sb.auth.signUp({email:em,password:pw,options:{data:{nom:nm,boutique:$('#ab').value.trim()}}});
   if(error)return er('#amsg',error.message);
-  if(!data.session){$('#amsg').innerHTML='<div class="msg">Compte créé. Vérifiez votre e-mail et cliquez sur le lien : il vous ramènera sur le site, déjà connecté.</div>';return}
+  if(!data.session){$('#amsg').innerHTML='<div class="msg">Compte créé. Vérifiez votre e-mail pour confirmer, puis connectez-vous.</div>';return}
   sheet('');toast('Compte créé, bienvenue !')}
  else if(a==='logout'){await sb.auth.signOut();sheet('');view='home';toast('Déconnecté')}
  else if(a==='srch'){q=$('#q').value;if(view!=='home'){view='home';render()}else upd()}
@@ -353,6 +406,42 @@ document.addEventListener('click',async e=>{const t=e.target.closest('[data-a]')
  else if(a==='jus'){const m=(prompt('Expliquez pourquoi la livraison est retardée (10 caractères minimum). Le délai sera prolongé de 3 jours, une seule fois :')||'').trim();
   if(!m)return;if(m.length<10)return toast('Expliquez le retard en quelques mots (10 caractères minimum).');
   await rpc('justifier_retard',{p_order:+id,p_motif:m.slice(0,300)});await reload();toast('Justification envoyée, délai prolongé.')}
+ else if(a==='coord'){sheet(`<div class="f"><h2>Mes coordonnées</h2><p class="note">Visibles seulement par les acheteurs connectés, quand ils touchent « Contacter sur WhatsApp » ou « Appeler le vendeur ».</p>
+  <label>Numéro WhatsApp (format international)</label><input id="cw" type="tel" inputmode="tel" placeholder="+22670123456" value="${esc(contact&&contact.whatsapp||'')}">
+  <label>Numéro de téléphone pour les appels</label><input id="ctel" type="tel" inputmode="tel" placeholder="+22670123456" value="${esc(contact&&contact.telephone||'')}">
+  <div id="cm"></div><button class="btn" data-a="coks">Enregistrer</button><div class="acts"><button class="btn alt" data-a="close">Fermer</button></div></div>`)}
+ else if(a==='coks'){const nz=v=>{v=v.replace(/[\s.\-()]/g,'');if(v.startsWith('00'))v='+'+v.slice(2);return v},w=nz($('#cw').value.trim()),t2=nz($('#ctel').value.trim()),ok=v=>!v||/^\+[1-9]\d{7,14}$/.test(v);
+  if(!ok(w)||!ok(t2))return er('#cm','Numéro invalide. Utilisez le format international, par exemple +22670123456.');
+  const {error}=await sb.from('contacts_vendeur').upsert({user_id:user.id,whatsapp:w||null,telephone:t2||null,updated_at:new Date().toISOString()});if(error)throw error;
+  contact={whatsapp:w||null,telephone:t2||null};sheet('');toast('Coordonnées enregistrées.')}
+ else if(a==='wa'||a==='tel'){if(!need())return;const p=P(id);if(p.seller_id===user.id)return toast('C\'est votre propre annonce.');
+  const c=await rpc('contact_vendeur',{p_product:p.id}),n=c&&(a==='wa'?c.whatsapp:c.telephone);
+  if(!n)return toast(a==='wa'?'Le vendeur n\'a pas renseigné de numéro WhatsApp.':'Le vendeur n\'a pas renseigné de numéro de téléphone.');
+  if(a==='wa')go('https://wa.me/'+n.replace(/\D/g,'')+'?text='+encodeURIComponent('Bonjour, je vous contacte depuis E-Market au sujet de votre annonce '+p.nom+'. Le produit est-il toujours disponible ?'),true);else go('tel:'+n,false)}
+ else if(a==='sp'){if(!need())return;const p=P(id);sheet(`<div class="f"><h2>⭐ Sponsoriser mon annonce</h2><p>${esc(p.nom)}</p><p class="note">Choisissez la durée :</p><div class="acts" style="flex-direction:column">${SP.map(([k,l,pr])=>`<button class="btn alt" data-a="spf" data-id="${p.id}" data-f="${k}">${l} · ${fcfa(pr)}</button>`).join('')}</div><div class="acts"><button class="btn alt" data-a="close">Fermer</button></div></div>`)}
+ else if(a==='spf'){const p=P(id),f=SP.find(y=>y[0]===t.dataset.f);sheet(`<div class="f"><h2>Récapitulatif</h2><div class="row"><span class="sub">Produit</span><span>${esc(p.nom)}</span></div><div class="row"><span class="sub">Durée</span><span>${f[1]}</span></div><div class="row"><span class="sub">Prix</span><b>${fcfa(f[2])}</b></div>
+  <div class="warn">La sponsorisation donne plus de visibilité à votre annonce (étiquette « Sponsorisé » et section dédiée), sans garantir la première place. Elle s'active uniquement après confirmation du paiement et se termine automatiquement à la fin de la durée.</div><div id="spm"></div>
+  <button class="btn acc" data-a="spok" data-id="${p.id}" data-f="${f[0]}">Confirmer ma demande</button><div class="acts"><button class="btn alt" data-a="sp" data-id="${p.id}">Retour</button></div></div>`)}
+ else if(a==='spok'){t.disabled=true;try{await rpc('demander_sponsorisation',{p_product:+id,p_formule:t.dataset.f})}catch(x){t.disabled=false;return er('#spm',x.message)}
+  tab='spons';view='shop';await reload();sheet(`<div class="f"><h2>Demande enregistrée</h2><p>Statut : <b>Paiement en attente</b></p><p class="note">Le paiement en ligne n'est pas encore disponible. Votre annonce sera sponsorisée dès que E-Market aura confirmé votre paiement. Suivez l'état dans Ma boutique → Sponsorisations.</p><div class="acts"><button class="btn" data-a="close">OK</button></div></div>`)}
+ else if(a==='spx'){if(confirm('Annuler cette demande de sponsorisation ?')){await rpc('annuler_sponsorisation',{p_id:+id});await reload()}}
+ else if(a==='saa'){const r=(prompt('Référence du paiement reçu (par exemple le numéro de transaction Orange ou Moov) :')||'').trim();if(!r)return;await rpc('admin_activer_sponsorisation',{p_id:+id,p_ref:r});adm=null;await reload();toast('Sponsorisation activée.')}
+ else if(a==='pbn')adForm('');
+ else if(a==='pbe')adForm(id);
+ else if(a==='pbt'){const x=pubs.find(y=>y.id==id),{error}=await sb.from('publicites').update({actif:!x.actif}).eq('id',+id);if(error)throw error;adm=null;await reload()}
+ else if(a==='pbd'){if(confirm('Supprimer définitivement cette publicité ?')){const {error}=await sb.from('publicites').delete().eq('id',+id);if(error)throw error;adm=null;await reload()}}
+ else if(a==='pbs'){const g=i=>$(i).value.trim(),en=g('#pe'),ti=g('#pt'),li=g('#pl'),db=g('#pdb'),dfn=g('#pdf');
+  if(!en||!ti)return er('#pm','Renseignez le nom de l\'entreprise et le titre.');
+  if(li&&!/^https:\/\//.test(li))return er('#pm','Le lien doit commencer par https://');
+  if(!db||!dfn)return er('#pm','Choisissez les dates de début et de fin.');
+  const d1=new Date(db+'T00:00:00'),d2=new Date(dfn+'T23:59:59');if(!(d2>d1))return er('#pm','La date de fin doit être après la date de début.');
+  t.disabled=true;
+  try{let url=null;const fl=$('#pi').files[0];
+   if(fl){const b=await shrink(fl),path=`${user.id}/pub_${Date.now()}.jpg`,up=await sb.storage.from('photos').upload(path,b,{contentType:'image/jpeg'});if(up.error)throw up.error;url=sb.storage.from('photos').getPublicUrl(path).data.publicUrl}
+   const row={entreprise:en,titre:ti,description:g('#pd')||null,lien:li||null,debut:d1.toISOString(),fin:d2.toISOString(),actif:$('#pa').checked,emplacement:$('#pp').value};if(url)row.image_url=url;
+   const rr=id?await sb.from('publicites').update(row).eq('id',+id):await sb.from('publicites').insert(row);if(rr.error)throw rr.error
+  }catch(x){t.disabled=false;return er('#pm',x.message)}
+  sheet('');adm=null;await reload();toast('Publicité enregistrée.')}
  else if(a==='rmph'){URL.revokeObjectURL(photos[+t.dataset.i].u);photos.splice(+t.dataset.i,1);pv()}
  else if(a==='pub'){if(me&&me.suspendu)return toast('Votre compte est suspendu.');const g=i=>$(i).value.trim(),pr=parseInt(g('#fx')),il=$('#fi').checked,qt=il?ILL:parseInt(g('#fq')),c=g('#fc');
   if(!g('#fn')||!(pr>0)||!(qt>0)||!g('#fd')){er('#fm','Renseignez le nom, un prix, une quantité et une description.');return}
@@ -381,6 +470,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='ct'){
  sb.auth.onAuthStateChange((_e,s)=>{user=s?s.user:null;setTimeout(reload,0)});
  try{await sb.rpc('expirer_commandes')}catch(e){}
  try{await sb.rpc('expirer_livraisons')}catch(e){}
+ try{await sb.rpc('expirer_sponsorisations')}catch(e){}
  await reload();
 })();
 </script>

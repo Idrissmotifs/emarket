@@ -117,6 +117,7 @@ const STEPS=['Paiement en attente','Paiement confirmé','Acceptée par le vendeu
 const TR={'Paiement en attente':['Paiement confirmé','Refusée'],'Paiement confirmé':['Acceptée par le vendeur','Refusée'],'Acceptée par le vendeur':['En préparation'],'En préparation':['En livraison']};
 const LBL={'Paiement confirmé':'TEST : simuler le paiement','Acceptée par le vendeur':'Accepter','En préparation':'Passer en préparation','En livraison':'Passer en livraison','Refusée':'Refuser'};
 const CLAIM=['Paiement confirmé','Acceptée par le vendeur','En préparation','En livraison','Livrée'];
+const ACHAT=false; /* true = réactive achat, panier, commandes et paiement (désactivé pour l'instant) */
 const MAXT=5,MAXP=4;
 const SP=[['24h','24 heures',500],['3j','3 jours',1000],['7j','7 jours',2000],['1m','1 mois',15000]];
 const POS={accueil_banniere:"Bannière page d'accueil",entre_produits:'Entre les produits',categorie:'Dans une catégorie',resultats:'Page de résultats'};
@@ -151,7 +152,7 @@ const pubOk=a=>a.actif&&new Date(a.debut)<=now()&&new Date(a.fin)>=now();
 const pubFor=pos=>{const l=pubs.filter(a=>a.emplacement===pos&&pubOk(a));return l.length?l[SEED%l.length]:null};
 const adHtml=(a,cl)=>{const i=`${a.image_url?`<img src="${esc(a.image_url)}" alt="">`:''}<div><small>Publicité · ${esc(a.entreprise)}</small><b>${esc(a.titre)}</b>${a.description?`<span>${esc(a.description)}</span>`:''}</div>`;
  return a.lien&&/^https:\/\//.test(a.lien)?`<a class="ad ${cl||''}" href="${esc(a.lien)}" target="_blank" rel="noopener noreferrer nofollow sponsored">${i}</a>`:`<div class="ad ${cl||''}">${i}</div>`};
-const cardHtml=p=>`<button class="card" data-a="open" data-id="${p.id}"><div class="pic">${pic(p)}</div><div class="in"><h3>${esc(p.nom)}</h3><div class="price">${fcfa(p.prix)}</div><div class="sub">📍 ${esc(p.zone||'—')}</div>${isSp(p)?'<span class="tag spo">⭐ Sponsorisé</span>':''}<span class="tag">${esc(p.etat)}</span>${p.quantite<=3?`<span class="tag low">Plus que ${p.quantite}</span>`:''}${p.ventes>0?`<div class="sub">${p.ventes} vendu${p.ventes>1?'s':''}</div>`:''}</div></button>`;
+const cardHtml=p=>`<button class="card" data-a="open" data-id="${p.id}"><div class="pic">${pic(p)}</div><div class="in"><h3>${esc(p.nom)}</h3><div class="price">${fcfa(p.prix)}</div><div class="sub">📍 ${esc(p.zone||'—')}</div>${isSp(p)?'<span class="tag spo">⭐ Sponsorisé</span>':''}<span class="tag">${esc(p.etat)}</span>${p.quantite<=3?`<span class="tag low">Plus que ${p.quantite}</span>`:''}${ACHAT&&p.ventes>0?`<div class="sub">${p.ventes} vendu${p.ventes>1?'s':''}</div>`:''}</div></button>`;
 function go(u,blank){if(!blank){location.href=u;return}const a=document.createElement('a');a.href=u;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}
 
 /* ---------- Données ---------- */
@@ -173,9 +174,9 @@ async function loadO(){
 async function reload(){await Promise.all([loadP(),loadO()]);render()}
 
 /* ---------- Vues ---------- */
-function nav(){$('#nav').innerHTML=[['home','🏠','Accueil'],['sell','➕','Vendre'],['orders','📦','Commandes'],['inbox','💬','Messages'],['shop','🏪','Ma boutique']].map(([v,i,t])=>`<button data-a="nav" data-v="${v}" class="${view===v||(v==='inbox'&&view==='chat')?'on':''}"><b>${i}</b>${t}</button>`).join('')}
+function nav(){$('#nav').innerHTML=[['home','🏠','Accueil'],['sell','➕','Vendre'],...(ACHAT?[['orders','📦','Commandes']]:[]),['inbox','💬','Messages'],['shop','🏪','Ma boutique']].map(([v,i,t])=>`<button data-a="nav" data-v="${v}" class="${view===v||(v==='inbox'&&view==='chat')?'on':''}"><b>${i}</b>${t}</button>`).join('')}
 function home(){
- $('#app').innerHTML=`${!q&&!cat?`<div class="hero"><h2>Achetez et vendez en toute simplicité</h2><p>Publiez vos produits gratuitement et trouvez des clients.</p><button class="btn acc sm" data-a="nav" data-v="sell">Vendre un produit</button><div class="pills"><span>Code de livraison à 5 chiffres</span><span>Commission de 1 % seulement</span></div></div>`:''}
+ $('#app').innerHTML=`${!q&&!cat?`<div class="hero"><h2>Achetez et vendez en toute simplicité</h2><p>Publiez vos produits gratuitement et trouvez des clients.</p><button class="btn acc sm" data-a="nav" data-v="sell">Vendre un produit</button><div class="pills">${ACHAT?'<span>Code de livraison à 5 chiffres</span><span>Commission de 1 % seulement</span>':'<span>Publication gratuite</span><span>Contact direct : WhatsApp, appel, messages</span>'}</div></div>`:''}
  <div class="cats"><button class="ct ${!cat?'on':''}" data-a="cat" data-c=""><b>🛍️</b>Tout</button>${CATS.map(([c,e])=>`<button class="ct ${cat===c?'on':''}" data-a="cat" data-c="${c}"><b>${e}</b>${c}</button>`).join('')}</div>
  <div class="fl"><input id="pmin" type="number" inputmode="numeric" min="0" placeholder="Prix min (FCFA)" value="${esc(pmin)}" aria-label="Prix minimum"><input id="pmax" type="number" inputmode="numeric" min="0" placeholder="Prix max (FCFA)" value="${esc(pmax)}" aria-label="Prix maximum">
  <select id="sort" aria-label="Trier"><option value="new">Plus récents</option><option value="asc" ${sort==='asc'?'selected':''}>Prix croissant</option><option value="desc" ${sort==='desc'?'selected':''}>Prix décroissant</option></select></div>
@@ -201,7 +202,7 @@ function sell(){const e=editId?P(editId):null;if(editId&&!e){editId=null;keepPh=
 <label>Localisation ou zone de livraison</label><input id="fz" maxlength="80" placeholder="Ex : Dakar, Pikine" value="${esc(v.zone||'')}">
 <label>Description</label><textarea id="fd" rows="3" maxlength="500">${esc(v.description)}</textarea>
 ${!contact||(!contact.whatsapp&&!contact.telephone)?'<p class="note">📞 Pour être contacté par WhatsApp ou par téléphone, ajoutez vos numéros dans 👤 → Mes coordonnées.</p>':''}
-<div class="warn">🚚 <b>Vous êtes responsable de la livraison.</b> Après paiement, vous avez 7 jours pour livrer. Si le produit n'est pas livré dans ce délai, sans justification valide de votre part, l'acheteur est remboursé automatiquement.</div>
+${ACHAT?`<div class="warn">🚚 <b>Vous êtes responsable de la livraison.</b> Après paiement, vous avez 7 jours pour livrer. Si le produit n'est pas livré dans ce délai, sans justification valide de votre part, l'acheteur est remboursé automatiquement.</div>`:''}
 <div id="fm"></div>
 <button class="btn" id="pubb" data-a="pub">${e?'Enregistrer les modifications':'Publier mon annonce'}</button>${e?'<div class="acts"><button class="btn alt" data-a="canedit">Annuler</button></div>':''}</div>`;pv()}
 function pv(){$('#pv').innerHTML=keepPh.map((u,i)=>`<div class="old"><img src="${esc(u)}" alt="Photo actuelle ${i+1}"><button data-a="rmold" data-i="${i}" aria-label="Retirer la photo actuelle ${i+1}">✕</button></div>`).join('')+photos.map((x,i)=>`<div><img src="${x.u}" alt="Photo ${i+1}"><button data-a="rmph" data-i="${i}" aria-label="Retirer la photo ${i+1}">✕</button></div>`).join('')}
@@ -219,8 +220,8 @@ function orders(){
  <div class="acts">${c.statut==='Paiement en attente'?`<button class="btn bad sm" data-a="cancel" data-id="${c.id}">Annuler la commande</button>`:''}${!claims[c.id]&&CLAIM.includes(c.statut)?`<button class="btn alt sm" data-a="claim" data-id="${c.id}">Signaler un problème</button>`:''}</div></div>`).join(''):'<div class="empty">Aucune commande pour le moment.<br>Choisissez un produit pour commencer.</div>')}
 function shop(){
  const mine=produits.filter(p=>p.seller_id===user.id),rec=recues;
- let h=`<h2>Ma boutique</h2><div class="tabs"><button data-a="tab" data-t="annonces" class="${tab==='annonces'?'on':''}">Mes annonces (${mine.length})</button><button data-a="tab" data-t="recues" class="${tab==='recues'?'on':''}">Commandes reçues (${rec.length})</button><button data-a="tab" data-t="spons" class="${tab==='spons'?'on':''}">Sponsorisations</button></div>`;
- if(tab==='annonces')h+=mine.length?mine.map(p=>`<div class="box"><h3>${esc(p.nom)}</h3><div class="price">${fcfa(p.prix)}</div><p class="sub">Quantité : ${illim(p)?'illimitée':p.quantite} · ${esc(p.categorie)}${p.ventes>0?' · '+p.ventes+' vendu'+(p.ventes>1?'s':''):''}</p>${p.disponible===false?'<span class="st bad">Indisponible</span>':'<span class="st ok">Disponible</span>'}${isSp(p)?` <span class="st ok">⭐ Sponsorisé jusqu'au ${esc(dt(spOf(p).fin))}</span>`:''}
+ let h=`<h2>Ma boutique</h2><div class="tabs"><button data-a="tab" data-t="annonces" class="${tab==='annonces'?'on':''}">Mes annonces (${mine.length})</button>${ACHAT?`<button data-a="tab" data-t="recues" class="${tab==='recues'?'on':''}">Commandes reçues (${rec.length})</button>`:''}<button data-a="tab" data-t="spons" class="${tab==='spons'?'on':''}">Sponsorisations</button></div>`;
+ if(tab==='annonces')h+=mine.length?mine.map(p=>`<div class="box"><h3>${esc(p.nom)}</h3><div class="price">${fcfa(p.prix)}</div><p class="sub">Quantité : ${illim(p)?'illimitée':p.quantite} · ${esc(p.categorie)}${ACHAT&&p.ventes>0?' · '+p.ventes+' vendu'+(p.ventes>1?'s':''):''}</p>${p.disponible===false?'<span class="st bad">Indisponible</span>':'<span class="st ok">Disponible</span>'}${isSp(p)?` <span class="st ok">⭐ Sponsorisé jusqu'au ${esc(dt(spOf(p).fin))}</span>`:''}
  <div class="acts"><button class="btn alt sm" data-a="open" data-id="${p.id}">Voir</button><button class="btn sm" data-a="edit" data-id="${p.id}">Modifier</button>${p.disponible!==false&&!isSp(p)&&!spons.some(x=>x.product_id==p.id&&x.statut==='En attente de paiement')?`<button class="btn acc sm" data-a="sp" data-id="${p.id}">⭐ Sponsoriser</button>`:''}<button class="btn alt sm" data-a="tog" data-id="${p.id}">${p.disponible===false?'Remettre en vente':'Marquer indisponible'}</button><button class="btn bad sm" data-a="del" data-id="${p.id}">Supprimer</button></div></div>`).join(''):'<div class="empty">Vous n\'avez pas encore d\'annonce.<br>Publiez votre premier produit.</div>';
  else if(tab==='spons')h+=sponsHtml();
  else if(!rec.length)h+='<div class="empty">Aucune commande reçue pour le moment.</div>';
@@ -242,7 +243,7 @@ function sponsHtml(){const l=spons.filter(x=>x.seller_id===user.id);
  ${st==='En attente de paiement'?`<p class="note">Paiement en attente. Votre annonce sera sponsorisée après confirmation du paiement. Demande n° ${x.id}.</p><div class="acts"><button class="btn bad sm" data-a="spx" data-id="${x.id}">Annuler la demande</button></div>`:''}
  ${st==='Active'?'<p class="note">Votre annonce est maintenant sponsorisée.</p>':''}${st==='Expirée'?'<p class="note">Votre sponsorisation a expiré.</p>':''}
  ${['Expirée','Annulée','Paiement échoué'].includes(st)&&p&&p.disponible!==false&&!isSp(p)?`<div class="acts"><button class="btn acc sm" data-a="sp" data-id="${p.id}">⭐ Sponsoriser à nouveau</button></div>`:''}</div>`}).join(''):'<div class="empty">Aucune sponsorisation pour le moment.<br>Depuis « Mes annonces », touchez « Sponsoriser ».</div>'}
-const cnt=()=>{$('#cn').textContent=cart.reduce((s,x)=>s+x.q,0)};
+const cnt=()=>{const e=$('#cn');if(e)e.textContent=cart.reduce((s,x)=>s+x.q,0)};
 const saveCart=()=>{try{localStorage.setItem('em_panier',JSON.stringify(cart))}catch(e){}cnt()};
 function cartItems(){const l=cart.map(i=>({p:P(i.id),q:i.q})).filter(x=>x.p&&x.p.disponible!==false&&x.p.quantite>0);l.forEach(x=>x.q=Math.min(x.q,x.p.quantite));return l}
 function cartView(){const l=cartItems(),t=l.reduce((s,x)=>s+x.p.prix*x.q,0);
@@ -267,7 +268,7 @@ function chatHtml(){const l=chatThread();return l.length?l.map(x=>`<div class="b
 function chatView(){if(!chat){view='inbox';return inbox()}
  const l=chatThread(),pr=P(chat.pid),seller=pr?pr.seller_id:(l[0]&&l[0].seller_id),o=chat.buyer===user.id?seller:chat.buyer;
  $('#app').innerHTML=`<button class="btn alt sm" data-a="nav" data-v="inbox">← Messages</button><h2 style="margin-top:10px">${esc(names[o]||(pr&&pr.vendeur)||'Conversation')}</h2><p class="sub">À propos de : ${esc(pr?pr.nom:(l[0]?l[0].produit:''))}</p>
- <div class="chat" id="cl">${chatHtml()}</div><div class="cin"><input id="ct" maxlength="500" placeholder="Votre message…" aria-label="Message"><button class="btn" data-a="send">Envoyer</button></div><p class="note">Ne payez jamais en dehors de la plateforme.</p>`;
+ <div class="chat" id="cl">${chatHtml()}</div><div class="cin"><input id="ct" maxlength="500" placeholder="Votre message…" aria-label="Message"><button class="btn" data-a="send">Envoyer</button></div><p class="note">Restez prudent : vérifiez le produit avant de payer. E-Market n'intervient pas dans les paiements entre acheteurs et vendeurs.</p>`;
  const c=$('#cl');c.scrollTop=c.scrollHeight;
  pollT=setInterval(async()=>{try{await loadM();const c=$('#cl');if(c&&view==='chat'){const end=c.scrollHeight-c.scrollTop-c.clientHeight<60;c.innerHTML=chatHtml();if(end)c.scrollTop=c.scrollHeight}}catch(e){}},4000)}
 
@@ -315,9 +316,9 @@ function openP(id){const p=P(id),ok=p.quantite>0&&p.disponible!==false;
  <h2>${esc(p.nom)}</h2>${isSp(p)?'<span class="tag spo">⭐ Sponsorisé</span>':''}<div class="price" style="font-size:22px">${fcfa(p.prix)}</div><p>${esc(p.description)}</p>
  <div class="row"><span class="sub">Catégorie</span><span>${esc(p.categorie)}</span></div><div class="row"><span class="sub">État</span><span>${esc(p.etat)}</span></div>
  <div class="row"><span class="sub">Disponibilité</span><span>${ok?stk(p):'Indisponible'}</span></div><div class="row"><span class="sub">Vendeur</span><span>${esc(p.vendeur)}</span></div><div class="row"><span class="sub">Zone</span><span>${esc(p.zone||'—')}</span></div>
- ${p.ventes>0?`<div class="row"><span class="sub">Vendus</span><span>${p.ventes}</span></div>`:''}
- <div class="warn">🛡️ <b>Achat protégé :</b> si le vendeur ne livre pas dans le délai prévu, sans justification valide, votre argent vous est reversé.</div>
- <div class="acts"><button class="btn acc" data-a="buy" data-id="${p.id}" ${ok?'':'disabled'}>Acheter</button><button class="btn" data-a="add" data-id="${p.id}" ${ok?'':'disabled'}>Ajouter au panier</button><button class="btn alt" data-a="contact" data-id="${p.id}">Contacter le vendeur</button><button class="btn wa" data-a="wa" data-id="${p.id}">💬 Contacter sur WhatsApp</button><button class="btn alt" data-a="tel" data-id="${p.id}">📞 Appeler le vendeur</button><button class="btn alt" data-a="close">Fermer</button></div>`)}
+ ${ACHAT&&p.ventes>0?`<div class="row"><span class="sub">Vendus</span><span>${p.ventes}</span></div>`:''}
+ ${ACHAT?'<div class="warn">🛡️ <b>Achat protégé :</b> si le vendeur ne livre pas dans le délai prévu, sans justification valide, votre argent vous est reversé.</div>':'<p class="note">E-Market met en relation acheteurs et vendeurs. Convenez du prix, de la livraison et du paiement directement avec le vendeur, et vérifiez le produit avant de payer.</p>'}
+ <div class="acts">${ACHAT?`<button class="btn acc" data-a="buy" data-id="${p.id}" ${ok?'':'disabled'}>Acheter</button><button class="btn" data-a="add" data-id="${p.id}" ${ok?'':'disabled'}>Ajouter au panier</button>`:''}<button class="btn ${ACHAT?'alt':''}" data-a="contact" data-id="${p.id}">💬 Écrire au vendeur sur le site</button><button class="btn wa" data-a="wa" data-id="${p.id}">💬 Contacter sur WhatsApp</button><button class="btn alt" data-a="tel" data-id="${p.id}">📞 Appeler le vendeur</button><button class="btn alt" data-a="close">Fermer</button></div>`)}
 function buyForm(id){const p=P(id);
  sheet(`<div class="f"><h2>Passer commande</h2><p>${esc(p.nom)} · ${fcfa(p.prix)}</p>
  <label>Quantité</label><input id="bq" type="number" inputmode="numeric" min="1" max="${p.quantite}" value="1">
@@ -466,6 +467,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='ct'){
 
 /* ---------- Démarrage ---------- */
 (async()=>{
+ if(!ACHAT){const c=document.querySelector('[data-v="cart"]');if(c)c.remove()}
  const {data}=await sb.auth.getSession();user=data.session?data.session.user:null;
  sb.auth.onAuthStateChange((_e,s)=>{user=s?s.user:null;setTimeout(reload,0)});
  try{await sb.rpc('expirer_commandes')}catch(e){}

@@ -2546,18 +2546,17 @@ async function iaCompose(cutBlob,sty){const bm=await createImageBitmap(cutBlob),
  const sh=ctx.createRadialGradient(W/2,dy+dh,4,W/2,dy+dh,dw*.55);sh.addColorStop(0,'rgba(0,0,0,.30)');sh.addColorStop(1,'rgba(0,0,0,0)');ctx.save();ctx.translate(0,dy+dh);ctx.scale(1,.16);ctx.translate(0,-(dy+dh));ctx.fillStyle=sh;ctx.beginPath();ctx.arc(W/2,dy+dh,dw*.55,0,7);ctx.fill();ctx.restore();
  ctx.drawImage(bm,bx,by,bw,bh,dx,dy,dw,dh);
  return new Promise(r=>c.toBlob(r,'image/jpeg',.88))}
-async function iaGo(){if(IAS.busy)return;IAS.busy=true;IAS.err='';IAS.pct=0;IAS.phase=IAS.cut?'Création du fond…':'Préparation…';iaDraw();
+async function iaGo(){if(IAS.busy)return;IAS.busy=true;IAS.err='';IAS.pct=0;IAS.phase=IAS.cut?'Création du fond…':'Préparation…';iaDraw();let st='photo';
  try{if(!IAS.cut){
    const blob=IAS.old?await (async()=>{const r=await fetch(keepPh[IAS.i]);if(!r.ok)throw new Error('Photo inaccessible.');return r.blob()})():photos[IAS.i].b;
-   const small=await iaBmp(blob,1024);IAS.phase='Chargement de l\'outil…';iaDraw();
-   const lib=await iaLib(),rb=lib.removeBackground||(lib.default&&lib.default.removeBackground)||lib.default;if(typeof rb!=='function')throw new Error('x');
-   let last=0;IAS.cut=await rb(small,{publicPath:'https://staticimgly.com/@imgly/background-removal-data/1.5.5/dist/',model:'isnet_quint8',device:'cpu',output:{format:'image/png'},
+   const small=await iaBmp(blob,1024);IAS.phase='Chargement de l\'outil…';iaDraw();st='outil';
+   const lib=await iaLib(),rb=lib.removeBackground||(lib.default&&lib.default.removeBackground)||lib.default;if(typeof rb!=='function')throw new Error('outil sans fonction ('+Object.keys(lib).join(',')+')');
+   st='détourage';let last=0;IAS.cut=await rb(small,{publicPath:'https://staticimgly.com/@imgly/background-removal-data/1.5.5/dist/',model:'isnet_quint8',device:'cpu',output:{format:'image/png'},
     progress:(key,cur,tot)=>{const f=String(key).startsWith('fetch');IAS.phase=f?'Téléchargement de l\'outil (une seule fois)…':'Détourage du produit…';IAS.pct=tot?Math.round(100*cur/tot):0;const n=Date.now();if(n-last>250){last=n;if(IAS.busy)iaDraw()}}})}
-  IAS.phase='Création du fond…';iaDraw();
-  const b=await iaCompose(IAS.cut,IAS.sty);if(!b)throw new Error('x');IAS.res={b,u:URL.createObjectURL(b)}}
- catch(x){const m=String((x&&x.message)||'');IAS.err=/Failed to fetch|NetworkError|import|load|dynamically/i.test(m)?'Impossible de charger l\'outil. Vérifiez votre connexion et réessayez.':m==='Photo inaccessible.'?m:'La photo pro n\'a pas marché. Essayez avec une autre photo.'}
+  st='fond';IAS.phase='Création du fond…';iaDraw();
+  const b=await iaCompose(IAS.cut,IAS.sty);if(!b)throw new Error('image vide');IAS.res={b,u:URL.createObjectURL(b)}}
+ catch(x){const m=String((x&&x.message)||x||'');console.error('photo pro',st,x);IAS.cut=st==='fond'?IAS.cut:null;IAS.err=(m==='Photo inaccessible.'?m:/Failed to fetch|NetworkError|dynamically|Load failed/i.test(m)?'Impossible de charger l\'outil. Vérifiez votre connexion et réessayez.':'La photo pro n\'a pas marché. Essayez avec une autre photo.')+' [étape : '+st+' — '+m.slice(0,160)+']'}
  IAS.busy=false;iaDraw()}
-
 async function iaUse(){if(!IAS.res)return;const nb=await shrink(IAS.res.b),u=URL.createObjectURL(nb);
  if(IAS.old){const [ou]=keepPh.splice(IAS.i,1);photos.push({b:nb,u,ia:true,main:IAS.i===0,orig:{u:ou,url:true}});if(IAS.i===0)photos.forEach(x=>{if(x.u!==u)x.main=false})}
  else{const o=photos[IAS.i];photos[IAS.i]={b:nb,u,ia:true,main:o.main,orig:{b:o.b,u:o.u}}}

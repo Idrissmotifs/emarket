@@ -1159,7 +1159,7 @@ function bellSheet(){if(!user){authForm('in');return}
 
 
 async function loadM(){
- const [p,m]=await Promise.all([sb.from('profiles').select('*').eq('id',user.id).maybeSingle(),sb.from('messages').select('*').order('created_at',{ascending:true}).limit(500)]);
+ const [p,m]=await Promise.all([sb.rpc('mon_profil'),sb.from('messages').select('*').order('created_at',{ascending:true}).limit(500)]);
  if(p.data){me=p.data;lsSet('zd_adm_'+user.id,me.role==='admin'?'1':'0')}if(!m.error)msgs=m.data||[];
  const ids=[...new Set(msgs.flatMap(x=>[x.buyer_id,x.seller_id]))];
  if(ids.length){const r=await sb.from('profiles').select('id,nom,boutique').in('id',ids);names={};(r.data||[]).forEach(x=>names[x.id]=x.boutique||x.nom||'Utilisateur')}
@@ -1180,12 +1180,12 @@ function chatView(){if(!chat){view='inbox';return inbox()}
 async function loadAdm(){
  const [st,cl,us,lg,sg,dv,so,s2,rs,tr,te,sus2,ky,ge]=await Promise.all([sb.rpc('admin_stats'),
   sb.from('claims').select('*, orders(produit,total,client,telephone,statut)').order('created_at',{ascending:false}).limit(30),
-  sb.from('profiles').select('*').order('created_at',{ascending:false}).limit(50),
+  sb.from('profiles').select('id,nom,boutique,role,suspendu,created_at').order('created_at',{ascending:false}).limit(50),
   sb.from('admin_log').select('*').order('created_at',{ascending:false}).limit(60),
   sb.from('signalements').select('*').order('created_at',{ascending:false}).limit(30),
   sb.from('demandes_verification').select('*').eq('statut','En attente').order('created_at',{ascending:true}).limit(50),
   sb.from('signalements_autres').select('*').eq('statut','Nouveau').order('created_at',{ascending:false}).limit(50),
-  sb.rpc('admin_stats2'),sb.rpc('admin_resume'),sb.rpc('saw_tresor_resume'),sb.rpc('saw_tresor_etat'),sb.from('profiles').select('*').eq('suspendu',true),sb.rpc('kyc_liste'),sb.rpc('saw_gel_etat')]);
+  sb.rpc('admin_stats2'),sb.rpc('admin_resume'),sb.rpc('saw_tresor_resume'),sb.rpc('saw_tresor_etat'),sb.rpc('admin_suspendus'),sb.rpc('kyc_liste'),sb.rpc('saw_gel_etat')]);
  adm={st:st.data||{},cl:cl.data||[],us:[...(sus2.data||[]),...(us.data||[]).filter(u=>!u.suspendu)],rs:rs.error?null:rs.data,ky:ky.error?null:ky.data,ge:ge.error?null:ge.data,ic:await iconCheck(),tr:tr.error?null:tr.data,te:te.error?null:te.data,lg:lg.data||[],sg:sg.data||[],dv:dv.data||[],so:so.data||[],s2:s2.error?null:s2.data};
 }
 

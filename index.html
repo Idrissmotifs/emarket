@@ -328,6 +328,11 @@ header{padding-bottom:10px!important}header.sc{padding-bottom:10px!important}hea
 .dots{width:48px;height:48px}
 .btn.sm{min-height:48px}
 .acts,.shtb{gap:8px}
+.pact .btn[data-a=add]{background:#fff!important;color:#1877F2!important;box-shadow:inset 0 0 0 2px #1877F2!important;font-weight:700}
+:root[data-theme=dark] .pact .btn[data-a=add]{background:transparent!important;color:#8FB8FF!important;box-shadow:inset 0 0 0 2px #4599FF!important}
+.inv{position:fixed;left:10px;right:10px;bottom:76px;z-index:60;background:var(--card,#fff);color:var(--ink,#0F1B33);border-radius:16px;box-shadow:0 6px 28px rgba(0,0,0,.28);padding:14px;border:1.5px solid #1877F2}
+.inv b{display:block;font-size:15px;margin-bottom:3px}.inv p{margin:0 0 10px;font-size:13px;line-height:1.4;opacity:.85}.inv .r{display:flex;gap:8px}.inv .btn{flex:1;min-height:40px}
+
 .au-qa{display:flex;flex-wrap:nowrap;gap:5px;margin:8px 14px 4px;overflow-x:auto;scrollbar-width:none}.au-qa::-webkit-scrollbar{display:none}.au-qa .btn{width:auto;flex:0 0 auto;min-height:32px;padding:5px 10px;font-size:12.5px;border-radius:16px;white-space:nowrap}
 .in h3{-webkit-line-clamp:unset;display:block;min-height:0;overflow:visible;overflow-wrap:anywhere}
 .card .price{white-space:normal;overflow:visible;overflow-wrap:anywhere}
@@ -1000,7 +1005,7 @@ async function loadO(){
  commandes=l.filter(c=>c.buyer_id===user.id);recues=l.filter(c=>c.seller_id===user.id);
  (cl.data||[]).forEach(r=>claims[r.order_id]=r);(cd.data||[]).forEach(r=>codes[r.order_id]=r.code);
 }
-async function reload(){await Promise.all([loadP(),loadO()]);render()}
+async function reload(){await Promise.all([loadP(),loadO()]);render();invCheck()}
 
 
 const NAVIC={"home": "<path d=\"M3 10.5 12 3l9 7.5V21H3z\"/><path d=\"M9 21v-6h6v6\"/>", "sell": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 8v8M8 12h8\"/>", "orders": "<path d=\"M21 8l-9-5-9 5v8l9 5 9-5z\"/><path d=\"M3 8l9 5 9-5M12 13v8\"/>", "inbox": "<path d=\"M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z\"/>", "shop": "<path d=\"M3 9l2-5h14l2 5\"/><path d=\"M4 9v11h16V9\"/><path d=\"M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0\"/><path d=\"M10 20v-5h4v5\"/>"};
@@ -1053,7 +1058,7 @@ function sell(){const e=editId?P(editId):null;if(editId&&!e){editId=null;keepPh=
 <label style="display:flex;gap:8px;align-items:center;margin-top:8px"><input id="fi" type="checkbox" ${il?'checked':''} style="width:auto"> Quantité illimitée (jamais en rupture)</label>
 <div class="two"><div><label>Catégorie</label><select id="fc">${CATS.map(([c])=>`<option ${c===v.categorie?'selected':''}>${c}</option>`).join('')}</select></div><div><label>État</label><select id="fe"><option ${v.etat==='Neuf'?'selected':''}>Neuf</option><option ${v.etat==='Occasion'?'selected':''}>Occasion</option></select></div></div>
 ${(()=>{const g=e?geoOf(e):{pays:lsGet('em_pays','')||'BF',ville:'',quart:''},pk=g.pays||lsGet('em_pays','')||'BF';return `<label>Pays</label><select id="fpays">${Object.keys(CTR).sort((a,b)=>CTR[a].localeCompare(CTR[b],'fr')).map(k=>`<option value="${k}" ${k===pk?'selected':''}>${flag(k)} ${esc(CTR[k])}</option>`).join('')}</select><label>Ville</label><input id="fville" list="fvl" maxlength="60" autocomplete="off" placeholder="Ex : Ouagadougou" value="${esc(g.ville)}"><datalist id="fvl">${(GEO[pk]||[]).map(c=>`<option value="${esc(c)}">`).join('')}</datalist><label>Quartier ou précision (facultatif)</label><input id="fz" maxlength="60" placeholder="Ex : Ouaga 2000" value="${esc(g.quart||'')}">`})()}
-<h3 style="margin-top:14px">🚚 Où livrez-vous ?</h3><p class="note">Indiquez au moins un lieu avec son prix et son délai de livraison. Si vous ne livrez pas dans le délai, l'acheteur est remboursé (après une marge de 24 h, ou 48 h si le délai dépasse 24 h).</p><div id="fzn">${znHtml()}</div><button class="btn alt sm" data-a="znadd">＋ Ajouter un lieu</button>
+${SANS()?'':`<h3 style="margin-top:14px">🚚 Où livrez-vous ?</h3><p class="note">Indiquez au moins un lieu avec son prix et son délai de livraison. Si vous ne livrez pas dans le délai, l'acheteur est remboursé (après une marge de 24 h, ou 48 h si le délai dépasse 24 h).</p><div id="fzn">${znHtml()}</div><button class="btn alt sm" data-a="znadd">＋ Ajouter un lieu</button>`}
 <label>Description</label><textarea id="fd" rows="3" maxlength="500">${esc(v.description)}</textarea>
 ${!contact||(!contact.whatsapp&&!contact.telephone)?'<p class="note">📞 Pour être contacté par WhatsApp ou par téléphone, ajoutez vos numéros dans 👤 → Mes coordonnées.</p>':''}
 ${ACHAT?`<div class="warn">🚚 <b>Vous êtes responsable de la livraison.</b> Après paiement, vous avez 7 jours pour livrer. Si le produit n'est pas livré dans ce délai, sans justification valide de votre part, l'acheteur est remboursé automatiquement.</div>`:''}
@@ -1223,7 +1228,7 @@ async function statDetail(k){
 }
 
 
-const iconCheck=()=>Promise.all(['zoodo-192.png','zoodo-512.png','zoodo-maskable-512.png'].map(f=>new Promise(r=>{const i=new Image();const t=setTimeout(()=>r(f),6000);i.onload=()=>{clearTimeout(t);r(null)};i.onerror=()=>{clearTimeout(t);r(f)};i.src=f+'?v='+Date.now()}))).then(l=>l.filter(Boolean));
+const iconCheck=()=>Promise.all(['zoodo-192.png','zoodo-512.png','zoodo-maskable-512.png'].map(async f=>{try{const c=new AbortController(),t=setTimeout(()=>c.abort(),15000);const r=await fetch(f,{method:'HEAD',cache:'no-store',signal:c.signal});clearTimeout(t);return r.status===404?f:null}catch(e){return null}})).then(l=>l.filter(Boolean));
 function kycAdm(){const k=adm.ky;if(k===null||k===undefined)return '';
  return `<br><h3>🪪 Vérifications d'identité (${k.length})</h3>${k.length?k.map(x=>`<div class="box"><div class="row" style="border:0"><h3>${esc(x.nom_complet)}</h3><span class="sub">${esc(x.pays)}</span></div><p class="sub">${esc(x.email||'')} · né(e) le ${esc(new Date(x.naissance).toLocaleDateString('fr-FR'))}<br>Pièce : ${esc(x.piece)} …${esc(x.piece_fin)}</p><div class="acts"><button class="btn alt sm" data-a="kycv" data-id="${x.user_id}">👁 Voir les photos</button><button class="btn sm" data-a="kycok" data-id="${x.user_id}">✔ Valider</button><button class="btn alt sm" data-a="kycno" data-id="${x.user_id}">✖ Refuser</button></div></div>`).join(''):'<p class="note">Aucune demande en attente.</p>'}`}
 function secAdm(){const g=adm.ge;const miss=adm.ic||[];
@@ -1942,7 +1947,41 @@ const lockKey='em_fail';
 function lockLeft(){try{const o=JSON.parse(localStorage.getItem(lockKey)||'null');if(o&&o.n>=5&&Date.now()<o.t+600000)return Math.max(1,Math.ceil((o.t+600000-Date.now())/60000))}catch(e){}return 0}
 function lockFail(){try{const o=JSON.parse(localStorage.getItem(lockKey)||'null')||{n:0,t:0},fresh=Date.now()>o.t+600000;const n=(fresh?0:o.n)+1;localStorage.setItem(lockKey,JSON.stringify({n,t:Date.now()}))}catch(e){}}
 function lockReset(){try{localStorage.removeItem(lockKey)}catch(e){}}
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();instP=e});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();instP=e;invCheck()});
+/* ===== LOT 21 : invitations installer l'application / notifications ===== */
+const INV_KEY='BOznbancjTxRWqsufdY7PGnxDb8X5p9rpUOPp2uI8LYB6SUEIwi-zkYGTO-B6EM8423yc4TIOT70XKqWMm6BeCg';
+const invGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},invSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const invIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent||'');
+const invB64=s=>{const r=atob((s+'='.repeat((4-s.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(r,c=>c.charCodeAt(0))};
+const invCan=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+async function invSub(){if(!user||!invCan()||Notification.permission!=='granted'||invGet('em_push_ok')===user.id)return;
+ try{const reg=await navigator.serviceWorker.ready;let sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:invB64(INV_KEY)});
+  const j=sub.toJSON();await rpc('push_enregistrer',{p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth});invSet('em_push_ok',user.id)}catch(e){}}
+function invClose(){const e=document.getElementById('inv');if(e)e.remove()}
+function invShow(kind){invClose();
+ const d=document.createElement('div');d.id='inv';d.className='inv';d.setAttribute('role','dialog');
+ if(kind==='i'){const ios=invIOS()&&!instP;
+  d.innerHTML=`<b>📲 Installer ZooDo sur ton téléphone</b><p>${ios?'Touche le bouton Partager de Safari, puis « Sur l\'écran d\'accueil ».':'Ouvre ZooDo en un geste, comme une application, même sans réseau rapide.'}</p><div class="r">${ios?'':'<button class="btn" data-i="go">Installer</button>'}<button class="btn alt" data-i="later">${ios?'Compris':'Plus tard'}</button></div>`}
+ else d.innerHTML=`<b>🔔 Ne rien manquer</b><p>Active les notifications pour être prévenu des messages, des réponses et des nouveautés de tes annonces.</p><div class="r"><button class="btn" data-i="go">Activer</button><button class="btn alt" data-i="later">Plus tard</button></div>`;
+ d.addEventListener('click',async e=>{const b=e.target.closest('[data-i]');if(!b)return;
+  if(b.dataset.i==='later'){invSet(kind==='i'?'em_inv_i':'em_inv_n',String(Date.now()));invClose();return}
+  invClose();
+  if(kind==='i'){try{if(instP){instP.prompt();const c=await instP.userChoice;instP=null;if(c&&c.outcome==='accepted')invSet('em_inst','1');else invSet('em_inv_i',String(Date.now()))}}catch(x){}setTimeout(invCheck,1500)}
+  else{try{const p=await Notification.requestPermission();if(p==='granted'){await invSub();toast('Notifications activées.')}else invSet('em_inv_n',String(Date.now()))}catch(x){}}});
+ document.body.appendChild(d)}
+let invT=null;
+function invCheck(){clearTimeout(invT);invT=setTimeout(()=>{try{
+ if(document.getElementById('inv'))return;
+ const now=Date.now(),old=(k,days)=>!(+invGet(k)&&now-(+invGet(k))<days*864e5);
+ if(user)invSub();
+ const app=isApp()||invGet('em_inst')==='1';
+ if(!app&&old('em_inv_i',7)&&(instP||invIOS())){invShow('i');return}
+ const iosNeedsApp=invIOS()&&!isApp();
+ if(invCan()&&!iosNeedsApp&&Notification.permission==='default'&&old('em_inv_n',3)&&(user||app||!old('em_inv_i',7)||!instP)){invShow('n')}
+ }catch(e){}},4000)}
+window.addEventListener('appinstalled',()=>{invSet('em_inst','1');invCheck()});
+window.addEventListener('load',invCheck);
+
 document.addEventListener('click',async e=>{const t=e.target.closest('[data-a]');if(!t)return;const a=t.dataset.a,id=t.dataset.id;if(t.closest('.ownm')&&['edit','sp','top','vend','tog','del','open'].includes(a))sheet('');
  const er=(el,m)=>{$(el).innerHTML=`<div class="msg err">${esc(m)}</div>`};
  try{
@@ -2241,7 +2280,7 @@ document.addEventListener('click',async e=>{const t=e.target.closest('[data-a]')
  else if(a==='zndel'){zdr.splice(Number(t.dataset.i),1);znRender()}
  else if(a==='pub'){let zerr='';let newId=null;if(me&&me.suspendu)return toast('Votre compte est suspendu.');const g=i=>$(i).value.trim(),pr=Math.round(parseFloat(g('#fx'))*(rates()[$('#fcur').value]||1)),il=$('#fi').checked,qt=il?ILL:parseInt(g('#fq')),c=g('#fc');
   if(!g('#fn')||!(pr>0)||!(qt>0)||!g('#fd')){er('#fm','Il manque le nom, le prix, la quantité ou la description.');return}
-  const zv=znValid();if(!zv){er('#fm','Ajoutez au moins un lieu de livraison, avec prix et délai.');return}
+  const zv=SANS()?[]:znValid();if(!zv){er('#fm','Ajoutez au moins un lieu de livraison, avec prix et délai.');return}
   const lab=editId?'Enregistrer les modifications':'Publier mon annonce';
   t.disabled=true;t.textContent='Enregistrement…';
   try{const urls=[...keepPh];let mainUrl='';
@@ -2253,7 +2292,7 @@ document.addEventListener('click',async e=>{const t=e.target.closest('[data-a]')
    {const ov=Math.round(parseFloat(g('#fo'))*(rates()[$('#fcur').value]||1));if(ov>pr)row.ancien_prix=ov;else if(editId&&'ancien_prix' in P(editId))row.ancien_prix=null}
    if(editId){const {error}=await sb.from('products').update(row).eq('id',editId).eq('seller_id',user.id);if(error)throw error}
    else{const {data:nw,error}=await sb.from('products').insert({seller_id:user.id,...row}).select('id').single();if(error)throw error;newId=nw&&nw.id}
-   {const zr=await sb.rpc('zones_enregistrer',{p_annonce:editId||newId,p_zones:zv});if(zr.error)zerr=zr.error.message}
+   if(!SANS()){const zr=await sb.rpc('zones_enregistrer',{p_annonce:editId||newId,p_zones:zv});if(zr.error)zerr=zr.error.message}
   }catch(x){t.disabled=false;t.textContent=lab;return er('#fm',x.message)}
   const was=editId;photos=[];keepPh=[];editId=null;q='';cat='';$('#q').value='';view=was?'shop':'home';await reload();toast(zerr?('Annonce enregistrée, mais la livraison n\'a pas pu être enregistrée : '+zerr):(was?'Annonce modifiée !':'Votre annonce est publiée !'));}
  }catch(x){toast(x.message||'Un problème est survenu. Réessayez.')}
